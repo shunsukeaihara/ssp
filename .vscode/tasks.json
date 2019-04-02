@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "debugBuild",
+            "type": "shell",
+            "command": "g++",
+            "args": ["-g", "-I${fileDirname}/", "${fileDirname}/main.cpp", "-o", "${fileDirname}/a.out"],
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "make",
+            "args": ["test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
