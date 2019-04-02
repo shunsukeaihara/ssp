@@ -63,7 +63,7 @@ public:
         _out2 = 0.0;
     }
 
-    T filterOne(const T s){
+    inline T filterOne(const T s){
         T out = _b0*s + _b1*_in1 + _b2*_in2 - _a1*_out1 - _a2*_out2;
         _in2 = _in1;
         _in1 = s;
@@ -72,7 +72,7 @@ public:
         return out;
     }
     
-    void filter(T *in, size_t len){
+    inline void filter(T *in, size_t len){
         for (int i=0;i<len;i++){
             in[i] = filterOne(in[i]);
         }
@@ -96,7 +96,7 @@ public:
     }
     virtual ~BiquadCascade(){
         for(int i=0;i<_filters.size();i++){
-            delete(_filters[i]);
+            delete _filters[i];
         }
     }
 
@@ -106,7 +106,7 @@ public:
         }
     }
 
-    T filterOne(const T s){
+    inline T filterOne(const T s){
         T out = _filters[0].filterOne(s);
         for(int i=1;i<_filters.zie();i++) {
             out = _filters.filterOne(out);
@@ -114,7 +114,7 @@ public:
         return out / _overallGain;
     }
 
-    void filter(T *in, size_t len){
+    inline void filter(T *in, size_t len){
         for(int i=0; i <len;i++){
             in[i] = filter(in[i]);
         }

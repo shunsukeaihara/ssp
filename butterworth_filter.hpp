@@ -77,7 +77,7 @@ public:
         _cascade = new BiquadCascade<T>(coeffs, filterNum, overallGain);
     }
     virtual ~ButterworthFilter(){
-        delete(_cascade);
+        delete _cascade;
     }
 
     static ButterworthFilter<T> *createLowPassFilter(T sampleRate, T cutoff, size_t order){
@@ -101,6 +101,14 @@ public:
 
     BiquadCascade<T>* getCascade(){
         return _cascade;
+    }
+
+    inline T filterOne(T s){
+        return _cascade->filterOne(s);
+    }
+
+    inline void filter(T *in, size_t len){
+        _cascade->filter(in, len);
     }
 
 private:

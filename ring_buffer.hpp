@@ -1,6 +1,8 @@
 #ifndef RING_BUFFER_H_
 #define RING_BUFFER_H_
 
+#include <algorithm>
+
 namespace ssp{
 
 template<class T>
@@ -85,6 +87,13 @@ public:
         }
     }
 
+    void reset(){
+        std::fill_n(_buffer, _capasity, 0);
+        _pos = 0;
+        _writeHead = 0;
+        _readHead = 0;
+    }
+
 private:
     const size_t _capasity;
     T *_buffer;
@@ -92,7 +101,7 @@ private:
     int _readHead;
     int _pos;
 
-    int relativeToabsolute(const int index){
+    inline int relativeToabsolute(const int index){
         int pos = index + _pos;
         if (pos >= 0){
             return pos % _capasity;

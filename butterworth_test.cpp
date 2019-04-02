@@ -39,6 +39,21 @@ void checkBiquadFilterCoeffs(BiquadCascade<double> *bqc, double a0, double a1, d
     if (abs(a0 - f->_a0) > EPSILON_COEFF){
         std::cout << "error" << std::endl;
     }
+    if (abs(a1 - f->_a1) > EPSILON_COEFF){
+        std::cout << "error" << std::endl;
+    }
+    if (abs(a2 - f->_a2) > EPSILON_COEFF){
+        std::cout << "error" << std::endl;
+    }
+    if (abs(b0 - f->_b0) > EPSILON_COEFF){
+        std::cout << "error" << std::endl;
+    }
+    if (abs(b1 - f->_b1) > EPSILON_COEFF){
+        std::cout << "error" << std::endl;
+    }
+    if (abs(b2 - f->_b2) > EPSILON_COEFF){
+        std::cout << "error" << std::endl;
+    }
 }
 
 void lowpassButterworthFilterTest(){
@@ -47,7 +62,7 @@ void lowpassButterworthFilterTest(){
     checkBiquadFilterCoeffs(bwf->getCascade(), 1.0, -1.91907529383978, 0.92395098208778, 1.0, 2.0, 1.0, 1);
     checkBiquadFilterCoeffs(bwf->getCascade(), 1.0, -1.88350864178159, 0.88829396780773, 1.0, 2.0, 1.0, 2);
     checkBiquadFilterCoeffs(bwf->getCascade(), 1.0, -1.86480445083537, 0.86954225616013, 1.0, 2.0, 1.0, 3);
-    delete(bwf);
+    delete bwf;
 }
 
 int main(){
