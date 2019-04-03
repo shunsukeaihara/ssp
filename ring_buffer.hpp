@@ -31,6 +31,15 @@ public:
         return _buffer[relativeToabsolute(index)];
     }
 
+    void movePos(size_t offset){
+        size_t moved = _pos + offset;
+        if (moved < _capasity){
+            _pos = moved;
+        }else{
+            _pos = (moved - _capasity) % _capasity;
+        }
+    }
+
     void write(T *in, size_t len){
         size_t rest = _capasity - _writeHead;
         if (rest > len){
@@ -44,15 +53,6 @@ public:
         }
     }
 
-    void movePos(size_t offset){
-        size_t moved = _pos + offset;
-        if (moved < _capasity){
-            _pos = moved;
-        }else{
-            _pos = (moved - _capasity) % _capasity;
-        }
-    }
-
     int read(T *out, size_t len){
         // 正しく読めたら0が返る
         if (!filled(len)){
@@ -60,19 +60,19 @@ public:
         }
         if (_writeHead > _readHead){
             // 追い抜いていない
-            memcpy(&_buffer[_readHead], out, sizeof(T) * len);
+            memcpy(out, &_buffer[_readHead], sizeof(T) * len);
             _readHead += len;
             return 0;
         }else{
             // 追い抜いている
             size_t rest = _capasity - _readHead;
             if (rest > len){
-                memcpy(&_buffer[_readHead], out, sizeof(T) * len);
+                memcpy(out, &_buffer[_readHead], sizeof(T) * len);
                 _readHead += len;
                 return 0;
             }else{
-                memcpy(&_buffer[_readHead], out, sizeof(T) * rest);
-                memcpy(_buffer, &out[rest], sizeof(T) * (len - rest));
+                memcpy(out, &_buffer[_readHead], sizeof(T) * rest);
+                memcpy(&out[rest], _buffer, sizeof(T) * (len - rest));
                 _readHead = rest;
                 return 0;
             }

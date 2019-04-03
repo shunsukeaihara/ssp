@@ -107,16 +107,16 @@ public:
     }
 
     inline T filterOne(const T s){
-        T out = _filters[0].filterOne(s);
-        for(int i=1;i<_filters.zie();i++) {
-            out = _filters.filterOne(out);
+        T out = _filters[0]->filterOne(s/_overallGain);
+        for(int i=1;i<_filters.size();i++) {
+            out = _filters[i]->filterOne(out);
         }
-        return out / _overallGain;
+        return out;
     }
 
     inline void filter(T *in, size_t len){
-        for(int i=0; i <len;i++){
-            in[i] = filter(in[i]);
+        for(int i=0; i<len; i++){
+            in[i] = filterOne(in[i]);
         }
     }
 
