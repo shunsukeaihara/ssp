@@ -1,8 +1,7 @@
 #ifndef BIQUAD_FILTER_H_
 #define BIQUAD_FILTER_H_
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <common.hpp>
 #include <vector>
 
 namespace ssp{
@@ -32,8 +31,8 @@ public:
     }
     virtual ~BiquadFilter(){}
 
-    static BiquadFilter<T> *createLowPassfilter(T sampleRate, T cutoff, T q){
-        T omega = calcOmega(sampleRate, cutoff);
+    static BiquadFilter<T> *createLowPassfilter(T fs, T cutoff, T q){
+        T omega = calcOmega(fs, cutoff);
         T alpha = calcAlpha(omega, q);
         T a0 = 1.0 + alpha;
         T a1 = -(2.0 * sin(omega));
@@ -44,8 +43,8 @@ public:
         return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
     }
 
-    static BiquadFilter<T> *createHighPassfilter(T sampleRate, T cutoff, T q){
-        T omega = calcOmega(sampleRate, cutoff);
+    static BiquadFilter<T> *createHighPassfilter(T fs, T cutoff, T q){
+        T omega = calcOmega(fs, cutoff);
         T alpha = calcAlpha(omega, q);
         T a0 = 1.0 + alpha;
         T a1 = -(2.0 * cos(omega));

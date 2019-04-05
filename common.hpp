@@ -1,5 +1,9 @@
 #ifndef COMMON_H_
 #define COMMON_H_
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 namespace ssp{
 
 template <typename T> inline int isEpochMark(const T in){

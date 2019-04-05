@@ -1,7 +1,6 @@
 #ifndef ZFREPOCHDETECDTOR_H_
 #define ZFREPOCHDETECDTOR_H_
 
-#include <math.h>
 #include <common.hpp>
 #include <ring_buffer.hpp>
 
@@ -10,7 +9,7 @@ namespace ssp{
 template<class T>
 class ZFREpochDetector {
 public: 
-    ZFREpochDetector(size_t avgWindow, size_t winsize, T a1, T a2): _avgWindow(avgWindow), _winsize(winsize), _a1(a1), _a2(a2){
+    ZFREpochDetector(size_t avgWindow, size_t maxwinsize, T a1, T a2): _avgWindow(avgWindow), _winsize(maxwinsize), _a1(a1), _a2(a2){
         init();
     }
 

@@ -36,7 +36,18 @@ public:
         if (moved < _capasity){
             _pos = moved;
         }else{
+            // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
             _pos = (moved - _capasity) % _capasity;
+        }
+    }
+
+    void moveWritePos(size_t offset){
+        size_t moved = _writePos + offset;
+        if (moved < _capasity){
+            _writePos = moved;
+        }else{
+            // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
+            _writePos = (moved - _capasity) % _capasity;
         }
     }
 
@@ -54,29 +65,19 @@ public:
     }
 
     int read(T *out, size_t len){
-        // 正しく読めたら0が返る
-        if (!filled(len)){
-            return -1;
+        int readSize = _read(out, len);
+        if (readSize > 0){
+            _readPos = relativeToabsolute(readSize);
         }
-        if (_writeHead > _readHead){
-            // 追い抜いていない
-            memcpy(out, &_buffer[_readHead], sizeof(T) * len);
-            _readHead += len;
-            return 0;
-        }else{
-            // 追い抜いている
-            size_t rest = _capasity - _readHead;
-            if (rest > len){
-                memcpy(out, &_buffer[_readHead], sizeof(T) * len);
-                _readHead += len;
-                return 0;
-            }else{
-                memcpy(out, &_buffer[_readHead], sizeof(T) * rest);
-                memcpy(&out[rest], _buffer, sizeof(T) * (len - rest));
-                _readHead = rest;
-                return 0;
-            }
+        return readSize;
+    }
+
+    int readWithSlide(T *out, size_t len, int offset){
+        int readSize = _read(out, len);
+        if (readSize > 0){
+            _readPos = relativeToabsolute(offset);
         }
+        return readSize;
     }
 
     bool filled(size_t len){
@@ -84,6 +85,14 @@ public:
             return (_writeHead - _readHead) > len;
         }else{
             return (_capasity - _readHead + _writeHead) > len;
+        }
+    }
+
+    bool filledFromCurrentPos(size_t len){
+        if (_writeHead > _pos){
+            return (_writeHead - _pos) > len;
+        }else{
+            return (_capasity - _pos + _writeHead) > len;
         }
     }
 
@@ -111,6 +120,30 @@ private:
                 return _capasity - mod;
             }else{
                 return 0;
+            }
+        }
+    }
+
+    int _read(T *out, size_t len){
+        // 次回の開始indexを返す。読めてなかったら-1を返す
+        if (!filled(len)){
+            return -1;
+        }
+        if (_writeHead > _readHead){
+            // 追い抜いていない
+            memcpy(out, &_buffer[_readHead], sizeof(T) * len);
+            return len;
+        }else{
+            // 追い抜いている
+            size_t rest = _capasity - _readHead;
+            if (rest > len){
+                memcpy(out, &_buffer[_readHead], sizeof(T) * len);
+                return len;
+            }else{
+                memcpy(out, &_buffer[_readHead], sizeof(T) * rest);
+                memcpy(&out[rest], _buffer, sizeof(T) * (len - rest));
+                _readHead = rest;
+                return len;
             }
         }
     }

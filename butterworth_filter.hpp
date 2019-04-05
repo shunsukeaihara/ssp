@@ -80,8 +80,8 @@ public:
         delete _cascade;
     }
 
-    static ButterworthFilter<T> *createLowPassFilter(T sampleRate, T cutoff, size_t order){
-        T wrapedCutoff = (2.0 * tan(M_PI*cutoff/sampleRate));
+    static ButterworthFilter<T> *createLowPassFilter(T fs, T cutoff, size_t order){
+        T wrapedCutoff = (2.0 * tan(M_PI*cutoff/fs));
         vector<complex<T> > zeros;
         vector<complex<T> > poles;
         vector<T> coeffs;
