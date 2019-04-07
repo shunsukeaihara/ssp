@@ -20,6 +20,9 @@
         "utility": "cpp",
         "vector": "cpp",
         "memory": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "istream": "cpp",
+        "ios": "cpp",
+        "iostream": "cpp"
     }
 }

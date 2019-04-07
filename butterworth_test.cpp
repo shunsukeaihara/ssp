@@ -2,7 +2,6 @@
 #include <biquad_filter.hpp>
 #include <butterworth_filter.hpp>
 #include <vector>
-#include <complex>
 #include <iostream>
 
 #define EPSILON 1.0e-14

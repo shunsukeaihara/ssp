@@ -71,7 +71,7 @@ public:
         return out;
     }
     
-    inline void filter(T *in, size_t len){
+    inline void filter(T *in, int len){
         for (int i=0;i<len;i++){
             in[i] = filterOne(in[i]);
         }
@@ -88,7 +88,7 @@ private:
 template <class T>
 class BiquadCascade{
 public:
-    BiquadCascade(vector<T> & coeffs, const size_t filterNum, const T overallGain): _overallGain(overallGain){
+    BiquadCascade(vector<T> & coeffs, const int filterNum, const T overallGain): _overallGain(overallGain){
         for(int i=0;i<filterNum;i++){
             _filters.push_back(new BiquadFilter<T>(1.0, coeffs[4*i], coeffs[4*i+1], 1.0, coeffs[4*i+2], coeffs[4*i+3]));
         }
@@ -113,7 +113,7 @@ public:
         return out;
     }
 
-    inline void filter(T *in, size_t len){
+    inline void filter(T *in, int len){
         for(int i=0; i<len; i++){
             in[i] = filterOne(in[i]);
         }

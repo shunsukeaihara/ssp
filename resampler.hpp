@@ -9,12 +9,12 @@ namespace ssp{
 template<class T>
 class Resampler{
 public:
-    Resampler(const int fromFs, const int toFs, const size_t capacity): _fromFs(fromFs), _toFs(toFs){
+    Resampler(const int fromFs, const int toFs, const int capacity): _fromFs(fromFs), _toFs(toFs){
         int gcd = calcGcd(fromFs, toFs);
         _fromMul = toFs / gcd;
         _toDiv = fromFs / gcd;
-        size_t bufferSize = capacity * _fromMul;
-        size_t outBufferSize = bufferSize * _toDiv;
+        int bufferSize = capacity * _fromMul;
+        int outBufferSize = bufferSize * _toDiv;
         _buffer = new T[bufferSize]();
         _outbuffer = new T[outBufferSize]();
         _filter = ButterworthFilter<T>::createLowPassFilter(fromFs*_fromMul, nyquistFromTwo<T>(fromFs, toFs), 8);
@@ -28,8 +28,8 @@ public:
 
     }
 
-    size_t process(T *in, size_t len, T *out){
-        size_t bufferLen = upsampling(in, len);
+    int process(T *in, int len, T *out){
+        int bufferLen = upsampling(in, len);
         return downsampling(bufferLen, out);
     }
 
@@ -50,7 +50,7 @@ private:
     int _toDiv;
     ButterworthFilter<T> * _filter;
 
-    inline size_t upsampling(T *in, const size_t len){
+    inline int upsampling(T *in, int len){
         if (_fromMul > 1){
             int j, k;
             for (int i=0; i<len; i++) {
@@ -67,7 +67,7 @@ private:
         return len * _fromMul;
     }
 
-    inline size_t downsampling(const size_t bufferLen, T *out){
+    inline int downsampling(const int bufferLen, T *out){
         if (_toDiv > 1) {
             int j;
             for (int i=0; i<bufferLen;i+=_toDiv) {

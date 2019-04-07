@@ -11,7 +11,7 @@ namespace ssp{
 using std::complex;
 using std::vector;
 
-template <typename T> inline void calcPoles(vector<complex<T> > & poles, const size_t order){
+template <typename T> inline void calcPoles(vector<complex<T> > & poles, const int order){
     for (int i=0;i<(order+1)/2;i++) {
         T theta = (2.0*i + 1.0) * M_PI / (2.0 * order);
         T real = -sin(theta);
@@ -40,8 +40,8 @@ template <typename T> inline T splane2zplane(vector<complex<T> > & zeros,
     return ret;
 }
 
-template <typename T> size_t zplane2SecondOrderSection(const vector<complex<T> > zeros,
-                                                       const vector<complex<T> > poles, const size_t filterNum,
+template <typename T> int zplane2SecondOrderSection(const vector<complex<T> > zeros,
+                                                       const vector<complex<T> > poles, const int filterNum,
                                                        vector<T> &coeffs){
     vector<complex<T> >zerosTemp(zeros);
     zerosTemp.resize(filterNum);
@@ -50,7 +50,7 @@ template <typename T> size_t zplane2SecondOrderSection(const vector<complex<T> >
     for (int i=zeros.size();i<filterNum;i++) {
 		zerosTemp[i] = complex<T>(-1, 0);
 	}
-    size_t nsos = 0;
+    int nsos = 0;
     for(int i=0;i<filterNum;i+=2){
         coeffs.push_back(-(polesTemp[i] + polesTemp[i+1]).real());
         coeffs.push_back((polesTemp[i] * polesTemp[i+1]).real());
@@ -73,14 +73,14 @@ template <typename T> size_t zplane2SecondOrderSection(const vector<complex<T> >
 template<class T>
 class ButterworthFilter{
 public:
-    ButterworthFilter(vector<T> & coeffs, const size_t filterNum, const T overallGain){
+    ButterworthFilter(vector<T> & coeffs, const int filterNum, const T overallGain){
         _cascade = new BiquadCascade<T>(coeffs, filterNum, overallGain);
     }
     virtual ~ButterworthFilter(){
         delete _cascade;
     }
 
-    static ButterworthFilter<T> *createLowPassFilter(T fs, T cutoff, size_t order){
+    static ButterworthFilter<T> *createLowPassFilter(T fs, T cutoff, int order){
         T wrapedCutoff = (2.0 * tan(M_PI*cutoff/fs));
         vector<complex<T> > zeros;
         vector<complex<T> > poles;
@@ -107,7 +107,7 @@ public:
         return _cascade->filterOne(s);
     }
 
-    inline void filter(T *in, size_t len){
+    inline void filter(T *in, int len){
         _cascade->filter(in, len);
     }
 
