@@ -143,30 +143,20 @@ class RingBuffer {
     int _pos;
 
     int relativeToabsoluteReadPos(const int index) const {
-        int pos = index + _readHead;
-        if (pos >= 0) {
-            return pos % _capasity;
+        int mod = (index + _readHead) % _capasity;
+        if (mod >= 0) {
+            return mod;
         } else {
-            int mod = pos % _capasity;
-            if (mod != 0) {
-                return _capasity + mod;
-            } else {
-                return 0;
-            }
+            return _capasity + mod;
         }
     }
 
     int relativeToabsolute(const int index) const {
-        int pos = index + _pos;
-        if (pos >= 0) {
-            return pos % _capasity;
+        int mod = (index + _pos) % _capasity;
+        if (mod >= 0) {
+            return mod;
         } else {
-            int mod = pos % _capasity;
-            if (mod != 0) {
-                return _capasity + mod;
-            } else {
-                return 0;
-            }
+            return _capasity + mod;
         }
     }
 

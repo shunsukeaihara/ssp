@@ -17,13 +17,12 @@ test_resampler:
 test_esola:
 	mkdir -p test
 	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/esola_test esola_test.cpp
-	# test/esola_test
+	# sox sample.wav -t raw - | test/esola_test |play -r 16000 -b 16 -c 1 -e signed -t raw -
 
 test_ringbuffer:
 	mkdir -p test
 	$(CC) $(CFLAGS) $(LDFLAGS) -o test/ringbuffer_test ringbuffer_test.cpp
 	test/ringbuffer_test
-
 
 clean:
 	rm -rf *.o

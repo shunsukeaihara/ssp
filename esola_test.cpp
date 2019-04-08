@@ -9,7 +9,7 @@ using namespace ssp;
 #define OUTSIZE 512
 
 int main() {
-    ESOLA<float> esola = ESOLA<float>(16000.0, 1.2, 16000 * 0.05, 512);
+    ESOLA<float> esola = ESOLA<float>(16000.0, 1.5, 16000 * 0.08, 512);
     short in[INSIZE];
     float f[INSIZE];
     float fout[OUTSIZE];
