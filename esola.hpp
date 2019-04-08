@@ -5,8 +5,9 @@
 #include <zfr_epoch_detector.hpp>
 #include <window.hpp>
 
-namespace ssp{
+#define ZFR_AVEGERA_WINDOW_IN_SEC 0.005
 
+namespace ssp{
 
 template <typename T> int findFirstEpoch(const RingBuffer<T> *in, int offset, int maxIndex){
     for (int i=offset;i<maxIndex;i++){
@@ -19,7 +20,7 @@ template<class T>
 class ESOLA{
 public:
     ESOLA(T fs, T tsr, int frameSize, int inputsize): _frameSize(frameSize), _fs(fs){
-        _zfr = new ZFREpochDetector<T>(int(fs * 0.005), inputsize, -2, 1);
+        _zfr = new ZFREpochDetector<T>(int(fs * ZFR_AVEGERA_WINDOW_IN_SEC), inputsize, -2, 1);
         _synthesisBuffer = new RingBuffer<T>(inputsize * tsr *11);
         _analysisBuffer = new RingBuffer<T>(inputsize * 5);
         _epochBuffer = new T[inputsize*2];

@@ -9,7 +9,7 @@ using namespace ssp;
 #define OUTSIZE 512
 
 int main(){
-    ESOLA<float> *esola = new ESOLA<float>(16000.0, 1.2, 16000 * 0.05, 512);
+    ESOLA<float> esola = ESOLA<float>(16000.0, 1.2, 16000 * 0.05, 512);
     short in[INSIZE];
     float f[INSIZE];
     float fout[OUTSIZE];
@@ -22,9 +22,9 @@ int main(){
         for (int i=0;i<INSIZE;i++){
             f[i] = ((float)in[i]) / 32768.0;
         }
-        esola->process(f, INSIZE);
+        esola.process(f, INSIZE);
         while(true){
-            int readCount = esola->read(fout, OUTSIZE);
+            int readCount = esola.read(fout, OUTSIZE);
             sumWrite += readCount;
             if (readCount<0){
                 break;
@@ -36,5 +36,4 @@ int main(){
         }
         if (nread < INSIZE * 2)break;
     }
-    delete esola;
 }
