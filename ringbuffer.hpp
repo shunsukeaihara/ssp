@@ -3,23 +3,23 @@
 #include <string.h>
 #include <algorithm>
 
-namespace ssp{
+namespace ssp {
 
-template<class T>
-class RingBuffer{
-public:
-    RingBuffer(int capasity): _capasity(capasity){
+template <class T>
+class RingBuffer {
+   public:
+    RingBuffer(int capasity) : _capasity(capasity) {
         _buffer = new T[capasity];
         std::fill_n(_buffer, _capasity, 0);
         _writeHead = 0;
         _readHead = 0;
         _pos = 0;
     }
-    virtual ~RingBuffer(){
+    virtual ~RingBuffer() {
         delete _buffer;
     }
 
-    inline T operator[](const int index) const{
+    inline T operator[](const int index) const {
         // 読み込み開始位置からの相対アクセス
         // 書き込んでいない領域のケアが必要だけど実用上は気にしなくても良い
         // エラーハンドリングを正しくやりたければオーバーロードをやめてポインタで値を受け取るのが良い
@@ -27,15 +27,15 @@ public:
         return _buffer[relativeToabsolute(index)];
     }
 
-    inline T& operator[](const int index) {
+    inline T &operator[](const int index) {
         return _buffer[relativeToabsolute(index)];
     }
 
-    inline T* at(const int index) {
+    inline T *at(const int index) {
         return &_buffer[relativeToabsolute(index)];
     }
 
-    inline T get(const int index)  const{
+    inline T get(const int index) const {
         return _buffer[relativeToabsolute(index)];
     }
 
@@ -43,33 +43,33 @@ public:
         _buffer[relativeToabsolute(index)] = val;
     }
 
-    void movePos(int offset){
+    void movePos(int offset) {
         // -を想定していない
         int moved = _pos + offset;
-        if (moved < _capasity){
+        if (moved < _capasity) {
             _pos = moved;
-        }else{
+        } else {
             // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
             _pos = moved % _capasity;
         }
     }
 
-    void moveWritePos(int offset){
+    void moveWritePos(int offset) {
         // -を想定していない
         int moved = _writeHead + offset;
-        if (moved < _capasity){
+        if (moved < _capasity) {
             _writeHead = moved;
-        }else{
+        } else {
             _writeHead = moved % _capasity;
         }
     }
 
-    void write(T *in, int len){
+    void write(T *in, int len) {
         int rest = _capasity - _writeHead;
-        if (rest > len){
-            memcpy(&_buffer[_writeHead], in, sizeof(T)*len);
+        if (rest > len) {
+            memcpy(&_buffer[_writeHead], in, sizeof(T) * len);
             _writeHead += len;
-        }else{
+        } else {
             memcpy(&_buffer[_writeHead], in, sizeof(T) * rest);
             int writeRest = len - rest;
             memcpy(_buffer, &in[rest], sizeof(T) * writeRest);
@@ -77,115 +77,115 @@ public:
         }
     }
 
-    int read(T *out, int len){
-        int readSize =  _read(out, len);
-        if (readSize > 0){
+    int read(T *out, int len) {
+        int readSize = _read(out, len);
+        if (readSize > 0) {
             _readHead = relativeToabsoluteReadPos(readSize);
         }
         return readSize;
     }
 
-    int readWithSlide(T *out, int len, int offset){
+    int readWithSlide(T *out, int len, int offset) {
         int readSize = _read(out, len);
-        if (readSize > 0){
+        if (readSize > 0) {
             _readHead = relativeToabsoluteReadPos(offset);
         }
         return readSize;
     }
 
-    bool filled(int len){
-        if (_writeHead >= _readHead){
+    bool filled(int len) {
+        if (_writeHead >= _readHead) {
             return (_writeHead - _readHead) >= len;
-        }else{
+        } else {
             return (_capasity - _readHead + _writeHead) >= len;
         }
     }
 
-    bool filledFromCurrentPos(int len){
-        if (_writeHead >= _pos){
+    bool filledFromCurrentPos(int len) {
+        if (_writeHead >= _pos) {
             return (_writeHead - _pos) >= len;
-        }else{
+        } else {
             return (_capasity - _pos + _writeHead) >= len;
         }
     }
 
-    size_t filledCount(){
-        if (_writeHead >= _readHead){
+    size_t filledCount() {
+        if (_writeHead >= _readHead) {
             return _writeHead - _readHead;
-        }else{
+        } else {
             return _capasity - _readHead + _writeHead;
         }
     }
 
-    int getCurrentPos(){
+    int getCurrentPos() {
         return _pos;
     }
-    int getCurrentReadHead(){
+    int getCurrentReadHead() {
         return _readHead;
     }
 
-    size_t getCapasity(){
+    size_t getCapasity() {
         return _capasity;
     }
 
-    void reset(){
+    void reset() {
         std::fill_n(_buffer, _capasity, 0);
         _pos = 0;
         _writeHead = 0;
         _readHead = 0;
     }
 
-private:
+   private:
     const int _capasity;
     T *_buffer;
     int _writeHead;
     int _readHead;
     int _pos;
 
-    int relativeToabsoluteReadPos(const int index) const{
+    int relativeToabsoluteReadPos(const int index) const {
         int pos = index + _readHead;
-        if (pos >= 0){
+        if (pos >= 0) {
             return pos % _capasity;
-        }else{
+        } else {
             int mod = pos % _capasity;
-            if (mod != 0){
+            if (mod != 0) {
                 return _capasity + mod;
-            }else{
+            } else {
                 return 0;
             }
         }
     }
 
-    int relativeToabsolute(const int index) const{
+    int relativeToabsolute(const int index) const {
         int pos = index + _pos;
-        if (pos >= 0){
+        if (pos >= 0) {
             return pos % _capasity;
-        }else{
+        } else {
             int mod = pos % _capasity;
-            if (mod != 0){
+            if (mod != 0) {
                 return _capasity + mod;
-            }else{
+            } else {
                 return 0;
             }
         }
     }
 
-    int _read(T *out, int len){
+    int _read(T *out, int len) {
         // 次回の開始indexを返す。読めてなかったら-1を返す
-        if (!filled(len)){
+        if (!filled(len)) {
             return -1;
         }
-        if (_writeHead > _readHead){
+        if (_writeHead > _readHead) {
             // 追い抜いていない
             memcpy(out, &_buffer[_readHead], sizeof(T) * len);
             return len;
-        }else{
+        } else {
             // 追い抜いている
             int rest = _capasity - _readHead;
-            if (rest > len){
+            if (rest > len) {
                 memcpy(out, &_buffer[_readHead], sizeof(T) * len);
                 return len;
-            }else{
+            } else {
                 memcpy(out, &_buffer[_readHead], sizeof(T) * rest);
                 memcpy(&out[rest], _buffer, sizeof(T) * (len - rest));
                 return len;
@@ -193,6 +193,6 @@ private:
         }
     }
 };
-}
+}  // namespace ssp
 
 #endif /* RING_BUFFER_H_ */
