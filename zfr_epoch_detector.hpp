@@ -34,20 +34,20 @@ public:
             _y1_2 = _y1_1;
             _y1_1 = _y1;
         }
-        size_t processed=0;
+        size_t processed = 0;
         T last = 0;
         for (int i=-_startOffset; i<(len-_avgWindow); i++){
             T sum = 0;
             for (int j=-_avgWindow; j<=_avgWindow; j++){
                 sum += (*_y2)[i+j];
             }
-            T winAvg = (*_y2)[i] - sum/(_avgWindow * 2 + 1);
+            T winAvg = (*_y2)[i] - sum/(float)(_avgWindow * 2 + 1);
             out[i+_startOffset] = (*_s)[i];
             // positive zero cross pointの判定
-            if (last * winAvg < 0 &&  winAvg > last){
+            if (last * winAvg < 0 && winAvg > last){
                 // 前回との積が負で、新しい値が正の時epoch mark -> LSBを1にする
                 // little endian前提のコードなのでbig endian系の場合はまた考慮する必要がある
-                //setEpochMark(&out[i+_startOffset]);
+                setEpochMark(&out[i+_startOffset]);
             }else{
                 //LSBを0にする
                 unsetEpochMark(&out[i+_startOffset]);

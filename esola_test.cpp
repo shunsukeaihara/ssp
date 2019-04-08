@@ -6,11 +6,10 @@
 using namespace ssp;
 
 #define INSIZE 512
-#define OUTSIZE 620
+#define OUTSIZE 512
 
 int main(){
-    std::ios_base::sync_with_stdio(false);
-    ESOLA<float> *esola = new ESOLA<float>(16000.0, 1.2, 16000 * 0.02, 512);
+    ESOLA<float> *esola = new ESOLA<float>(16000.0, 1.2, 16000 * 0.05, 512);
     short in[INSIZE];
     float f[INSIZE];
     float fout[OUTSIZE];

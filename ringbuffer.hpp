@@ -44,22 +44,23 @@ public:
     }
 
     void movePos(int offset){
+        // -を想定していない
         int moved = _pos + offset;
         if (moved < _capasity){
             _pos = moved;
         }else{
             // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
-            _pos = (moved - _capasity) % _capasity;
+            _pos = moved % _capasity;
         }
     }
 
     void moveWritePos(int offset){
+        // -を想定していない
         int moved = _writeHead + offset;
         if (moved < _capasity){
             _writeHead = moved;
         }else{
-            // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
-            _writeHead = (moved - _capasity) % _capasity;
+            _writeHead = moved % _capasity;
         }
     }
 
@@ -108,6 +109,25 @@ public:
         }
     }
 
+    size_t filledCount(){
+        if (_writeHead >= _readHead){
+            return _writeHead - _readHead;
+        }else{
+            return _capasity - _readHead + _writeHead;
+        }
+    }
+
+    int getCurrentPos(){
+        return _pos;
+    }
+    int getCurrentReadHead(){
+        return _readHead;
+    }
+
+    size_t getCapasity(){
+        return _capasity;
+    }
+
     void reset(){
         std::fill_n(_buffer, _capasity, 0);
         _pos = 0;
@@ -129,7 +149,7 @@ private:
         }else{
             int mod = pos % _capasity;
             if (mod != 0){
-                return _capasity - mod;
+                return _capasity + mod;
             }else{
                 return 0;
             }
@@ -143,7 +163,7 @@ private:
         }else{
             int mod = pos % _capasity;
             if (mod != 0){
-                return _capasity - mod;
+                return _capasity + mod;
             }else{
                 return 0;
             }

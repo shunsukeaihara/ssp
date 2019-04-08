@@ -33,15 +33,18 @@ int main(){
         std::cout << "error" << std::endl;
     }
     buffer->reset();
-    buffer->write(in, 3);
-    buffer->read(out, 3);
-    for (int i=0;i<3;i++){
-        if (in[i] != out[i]){
+    for(int x=0;x<1000;x++){
+        buffer->write(in, 3);
+        buffer->read(out, 3);
+        for (int i=0;i<3;i++){
+            if (in[i] != out[i]){
+                std::cout << "error" << std::endl;
+            }
+        }
+        std::fill_n(out, 3, 0);
+        if (buffer->filled(1)){
             std::cout << "error" << std::endl;
         }
-    }
-    if (buffer->filled(1)){
-        std::cout << "error" << std::endl;
     }
     buffer->reset();
     for (int i=0;i<3;i++){
@@ -74,4 +77,30 @@ int main(){
         }
     }
     delete buffer;
+    RingBuffer<short> buffer2 = RingBuffer<short>(10);
+    buffer2[0] = 1;
+    buffer2[1] = 2;
+    buffer2[2] = 3;
+    buffer2.movePos(3);
+    buffer2[0] = 4;
+    buffer2[1] = 5;
+    buffer2[2] = 6;
+    for(int i = -3; i < 3; i++){
+        if (buffer2[i] != (i+4)){
+            std::cout << "error" << std::endl;
+        }
+    }
+    RingBuffer<short> buffer3 = RingBuffer<short>(10);
+    for (int x=0;x<100;x++){
+        for(int i=0;i<10;i++){
+            buffer3[i] = i;
+        }
+        buffer3.movePos(10);
+        for(int i=0;i<10;i++){
+            if(buffer3[i-10] != i){
+               std::cout << "error" << std::endl;
+            }
+        }
+    }
+
 }

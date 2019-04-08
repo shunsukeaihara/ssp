@@ -24,13 +24,11 @@ public:
         _analysisBuffer = new RingBuffer<T>(inputsize * 5);
         _epochBuffer = new T[inputsize*2];
         _a = tsr;
-        _ss = frameSize / 2; // ピッチだけ変えたい場合はここの詰め方を変える必要があるが、一応オリジナルのtimescale変更のみのモノでやる
+        _ss = frameSize / 2;
         _sa = round(_ss/_a);
         _l = _frameSize - _ss;
         _window = new T[_l * 2];
         hammingWindow(_window, _l * 2);
-        hoge = int(fs * 0.005);
-        moke = 0;
     }
 
     virtual ~ESOLA(){
@@ -40,9 +38,6 @@ public:
         delete _epochBuffer;
         delete _window;
     }
-
-    int hoge;
-    int moke;
 
     void process(const T *in, const int len){
         if (len<=0){return;}
@@ -57,17 +52,13 @@ public:
             // offsetした上で、frame分の容量が無いと終了
             if (!_analysisBuffer->filledFromCurrentPos(_frameSize + k))break;
             for (int i=0;i<_frameSize;i++){
-                (*_synthesisBuffer)[i] = (*_analysisBuffer)[i+k];
-                // 半分シフトだからこれで良いけれど、そうでなければoverlap and addの処理をするときに、
-                // framesize分全部windowingして、その係数をそれぞれ保存してあとで正規化するのが良さそう
                 if (i < _l){
                     bool epoch = false;
                     if (isEpochMark((*_synthesisBuffer)[i]) || isEpochMark((*_analysisBuffer)[i+k])){
-                        // 半分シフトではなく詰める場合にはピッチマークをゴリゴリ入れておくほうが良いけれど、半分シフトならこれ考えなくて良い
                         epoch = true;
                     }
                     T fade = _window[i];
-                    (*_synthesisBuffer)[i] = (*_synthesisBuffer)[i] * fade + (*_analysisBuffer)[i+k] * (1.0 - fade);
+                    (*_synthesisBuffer)[i] = (*_synthesisBuffer)[i] * (1.0 - fade) + (*_analysisBuffer)[i+k] * fade;
                     if (epoch){
                         setEpochMark(_synthesisBuffer->at(i));
                     }else{
@@ -104,7 +95,7 @@ private:
     T _fs;
 
     int calcK() const{
-        int l = findFirstEpoch(_synthesisBuffer, 0, _l); // synthesys frameは_ss分だけ先に書き込まれている
+        int l = findFirstEpoch(_synthesisBuffer, 0, _frameSize); // synthesys frameは_ss分だけ先に書き込まれている
         if (l < 0)return 0;
         int n = findFirstEpoch(_analysisBuffer, l, _frameSize);
         if (n < 0)return 0;
