@@ -18,7 +18,7 @@ inline T singlePoleLPF(T x, T y_1, T factor) {
 template <class T>
 class EnvelopeGenerator {
    public:
-    EnvelopeGenerator(T attackMs, T releaseMs, T fs) : _attFactor(calcSinglePoleFactor(attackMs, fs)), calcSinglePoleFactor(calcStepResponse(releaseMs, fs)) {
+    EnvelopeGenerator(T attackMs, T releaseMs, T fs) : _attFactor(calcSinglePoleFactor(attackMs, fs)), _relFactor(calcStepResponse(releaseMs, fs)) {
         _y_1 = SSP_DC_OFFSET;
     }
     virtual ~EnvelopeGenerator() {}
