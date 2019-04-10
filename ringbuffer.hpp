@@ -20,10 +20,6 @@ class RingBuffer {
     }
 
     inline T operator[](const int index) const {
-        // 読み込み開始位置からの相対アクセス
-        // 書き込んでいない領域のケアが必要だけど実用上は気にしなくても良い
-        // エラーハンドリングを正しくやりたければオーバーロードをやめてポインタで値を受け取るのが良い
-        // あっても数十のインデックス幅でのアクセスなのであんまり気にしなくても良いけど無駄にmodを取っている
         return _buffer[relativeToabsolute(index)];
     }
 
@@ -49,7 +45,6 @@ class RingBuffer {
         if (moved < _capasity) {
             _pos = moved;
         } else {
-            // capasityを2回目超えてmoveするようなことが起きるとハチャメチャな状態だけどmodとってもおかしくはらない
             _pos = moved % _capasity;
         }
     }
@@ -162,9 +157,7 @@ class RingBuffer {
 
     int _read(T *out, int len) {
         // 次回の開始indexを返す。読めてなかったら-1を返す
-        if (!filled(len)) {
-            return -1;
-        }
+        if (!filled(len)) return -1;
         if (_writeHead > _readHead) {
             // 追い抜いていない
             memcpy(out, &_buffer[_readHead], sizeof(T) * len);
