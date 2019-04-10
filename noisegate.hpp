@@ -15,9 +15,9 @@ class NoiseGate {
     }
     virtual ~NoiseGate(){};
 
-    inline void filterStereo(T *in1, T *in2, int len) {
-        for (int i = 0; i < len; i++) {
-            filterOneStereo(in1[i], in2[i]);
+    inline void filterStereo(T *in, int len) {
+        for (int i = 0; i < len * 2; i += 2) {
+            filterOneStereo(in[i], in[i + 1]);
         }
     }
 
