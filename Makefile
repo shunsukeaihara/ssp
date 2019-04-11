@@ -11,16 +11,16 @@ test_butterworth:
 
 sample_resampler:
 	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/resampler_sample resampler_sample.cpp
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/resampler_sample resampler_sample.cpp
 
 sample_esola:
 	mkdir -p test
-	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/esola_sample esola_sample.cpp
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/esola_sample esola_sample.cpp
 	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
 
 sample_pitchshifter:
 	mkdir -p test
-	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/pitchshifter_sample pitchshifter_sample.cpp
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/pitchshifter_sample pitchshifter_sample.cpp
 	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
 
 test_ringbuffer:
