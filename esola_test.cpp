@@ -2,17 +2,20 @@
 #include <common.hpp>
 #include <esola.hpp>
 #include <iostream>
+#include <noisegate.hpp>
 
 using namespace ssp;
 
-#define INSIZE 512
-#define OUTSIZE 512
+#define INSIZE 4096
+#define OUTSIZE 4096
+#define FS 48000.0
 
 int main() {
-    ESOLA<float> esola = ESOLA<float>(16000.0, 1.5, 16000 * 0.08, 512);
+    ESOLA<double> esola = ESOLA<double>(FS, 1.5, FS * 0.05, INSIZE);
+    NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
     short in[INSIZE];
-    float f[INSIZE];
-    float fout[OUTSIZE];
+    double f[INSIZE];
+    double fout[OUTSIZE];
     short out[OUTSIZE];
     int sumRead = 0;
     int sumWrite = 0;
@@ -20,8 +23,9 @@ int main() {
         size_t nread = read(0, (char*)in, sizeof(in));
         sumRead += nread / 2;
         for (int i = 0; i < INSIZE; i++) {
-            f[i] = ((float)in[i]) / 32768.0;
+            f[i] = ((double)in[i]) / 32768.0;
         }
+        gate.filter(f, INSIZE);
         esola.process(f, INSIZE);
         while (true) {
             int readCount = esola.read(fout, OUTSIZE);

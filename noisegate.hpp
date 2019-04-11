@@ -10,8 +10,8 @@ namespace ssp {
 template <class T>
 class NoiseGate {
    public:
-    NoiseGate(T attackMs, T releaseMs, T threshDb, T fs) : _env(EnvelopeGenerator(attackMs, releaseMs, fs)) {
-        _threashold = db2lin(threshDb);
+    NoiseGate(T attackMs, T releaseMs, T threshDb, T fs) : _env(EnvelopeGenerator<T>(attackMs / 3.0, releaseMs / 3.0, fs)) {
+        _threshold = db2lin(threshDb);
     }
     virtual ~NoiseGate(){};
 
@@ -37,10 +37,14 @@ class NoiseGate {
         in2 *= gain;
     }
 
+    void reset() {
+        _env.reset();
+    }
+
    private:
     T _threshold;
     T _response;
-    EnvelopeGenerator _env;
+    EnvelopeGenerator<T> _env;
 
     // keyは必ず絶対値を受け取る
     inline T calcGain(T key) {

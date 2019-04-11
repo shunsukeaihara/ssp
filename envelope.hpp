@@ -6,8 +6,8 @@
 namespace ssp {
 
 template <typename T>
-inline T calcSinglePoleFactor(T tsInMs, T fs) {
-    return exp((-1.0 / fs) / (tsInMs / 1000.0));
+inline T calcSinglePoleFactor(T tcInMs, T fs) {
+    return exp((-1.0 / fs) / (tcInMs / 1000.0));
 }
 
 template <typename T>
@@ -18,19 +18,23 @@ inline T singlePoleLPF(T x, T y_1, T factor) {
 template <class T>
 class EnvelopeGenerator {
    public:
-    EnvelopeGenerator(T attackMs, T releaseMs, T fs) : _attFactor(calcSinglePoleFactor(attackMs, fs)), _relFactor(calcStepResponse(releaseMs, fs)) {
+    EnvelopeGenerator(T attackMs, T releaseMs, T fs) : _attFactor(calcSinglePoleFactor(attackMs, fs)), _relFactor(calcSinglePoleFactor(releaseMs, fs)) {
         _y_1 = SSP_DC_OFFSET;
     }
     virtual ~EnvelopeGenerator() {}
 
     inline T filterOne(T x) {
         x = x + SSP_DC_OFFSET;
-        if (x > y_1) {
+        if (x > _y_1) {
             _y_1 = singlePoleLPF(x, _y_1, _attFactor);
         } else {
             _y_1 = singlePoleLPF(x, _y_1, _relFactor);
         }
         return _y_1 - SSP_DC_OFFSET;
+    }
+
+    void reset() {
+        _y_1 = SSP_DC_OFFSET;
     }
 
    private:
