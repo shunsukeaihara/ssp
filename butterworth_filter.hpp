@@ -106,6 +106,10 @@ class ButterworthFilter {
         return _cascade;
     }
 
+    inline T getOverallGain() {
+        return _cascade->getOverallGain();
+    }
+
     inline T filterOne(T s) {
         return _cascade->filterOne(s);
     }

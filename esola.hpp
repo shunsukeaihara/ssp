@@ -20,7 +20,7 @@ int findFirstEpoch(const RingBuffer<T> &in, int offset, int maxIndex) {
 template <class T>
 class ESOLA {
    public:
-    ESOLA(T fs, T tsr, int frameSize, int inputsize) : _frameSize(frameSize), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {
+    ESOLA(T tsr, int frameSize, int inputsize, T fs) : _frameSize(frameSize), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {
         _zfr = new ZFREpochDetector<T>(int(fs * SSP_ZFR_AVEGERA_WINDOW_IN_SEC), inputsize, -2, 1);
         _epochBuffer = new T[inputsize * 2];
         _a = tsr;

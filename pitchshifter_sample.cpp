@@ -1,17 +1,17 @@
 #include <unistd.h>
 #include <common.hpp>
-#include <esola.hpp>
 #include <iostream>
 #include <noisegate.hpp>
+#include <pitchshifter.hpp>
 
 using namespace ssp;
 
-#define INSIZE 4096
-#define OUTSIZE 4096
+#define INSIZE 2048
+#define OUTSIZE 2048
 #define FS 48000.0
 
 int main() {
-    ESOLA<double> esola = ESOLA<double>(FS, 1.5, FS * 0.05, INSIZE);
+    PitchShifter<double> shifter = PitchShifter<double>(1.2, INSIZE, 620, FS);
     NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
     short in[INSIZE];
     double f[INSIZE];
@@ -26,9 +26,9 @@ int main() {
             f[i] = ((double)in[i]) / 32768.0;
         }
         gate.filter(f, INSIZE);
-        esola.process(f, INSIZE);
+        shifter.process(f, INSIZE);
         while (true) {
-            int readCount = esola.read(fout, OUTSIZE);
+            int readCount = shifter.read(fout, OUTSIZE);
             sumWrite += readCount;
             if (readCount < 0) {
                 break;

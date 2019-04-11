@@ -2,22 +2,26 @@ CC :=g++
 CFLAGS := -I. -Wall
 LDFLAGS :=
 
-test: test_butterworth test_resampler test_esola test_ringbuffer
+test: test_butterworth sample_resampler sample_esola test_ringbuffer sample_pitchshifter
 
 test_butterworth:
 	mkdir -p test
 	$(CC) $(CFLAGS) $(LDFLAGS) -o test/butterworth_test butterworth_test.cpp
 	test/butterworth_test
 
-test_resampler:
+sample_resampler:
 	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/resampler_test resampler_test.cpp
-	test/resampler_test
+	$(CC) $(CFLAGS) $(LDFLAGS) -o test/resampler_sample resampler_sample.cpp
 
-test_esola:
+sample_esola:
 	mkdir -p test
-	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/esola_test esola_test.cpp
-	# sox sample.wav -t raw - | test/esola_test |play -r 16000 -b 16 -c 1 -e signed -t raw -
+	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/esola_sample esola_sample.cpp
+	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
+
+sample_pitchshifter:
+	mkdir -p test
+	$(CC) $(CFLAGS) -g -O0 $(LDFLAGS) -o test/pitchshifter_sample pitchshifter_sample.cpp
+	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
 
 test_ringbuffer:
 	mkdir -p test

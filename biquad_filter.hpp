@@ -107,7 +107,7 @@ class BiquadCascade {
     }
 
     inline T filterOne(const T s) {
-        T out = _filters[0]->filterOne(s / _overallGain);
+        T out = _filters[0]->filterOne(s * _overallGain);
         for (int i = 1; i < _filters.size(); i++) {
             out = _filters[i]->filterOne(out);
         }
@@ -122,6 +122,10 @@ class BiquadCascade {
 
     BiquadFilter<T> *getFilter(const int i) {
         return _filters[i];
+    }
+
+    inline T getOverallGain() {
+        return _overallGain;
     }
 
    private:
