@@ -5,6 +5,7 @@
 
 namespace ssp {
 
+// 遅れ時間msの一次IIRフィルタ係数を求める
 template <typename T>
 inline T calcSinglePoleFactor(T tcInMs, T fs) {
     return exp((-1.0 / fs) / (tcInMs / 1000.0));
