@@ -3,7 +3,6 @@
 #include <esola.hpp>
 #include <iostream>
 #include <noisegate.hpp>
-
 using namespace ssp;
 
 #define INSIZE 2048
@@ -11,7 +10,7 @@ using namespace ssp;
 #define FS 48000.0
 
 int main() {
-    ESOLA<double> esola = ESOLA<double>(0.9, FS * 0.02, INSIZE, FS);
+    ESOLA<double> esola = ESOLA<double>(1.2, FS * 0.02, INSIZE, FS);
     NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
     short in[INSIZE];
     double f[INSIZE];
