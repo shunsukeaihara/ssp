@@ -11,7 +11,7 @@ using namespace ssp;
 #define FS 48000.0
 
 int main() {
-    PitchShifter<double> shifter = PitchShifter<double>(1.05, INSIZE, 620, FS);
+    PitchShifter<double> shifter = PitchShifter<double>(0.8, 0.001, INSIZE, 620, FS);
     NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
     short in[INSIZE];
     double f[INSIZE];
@@ -25,7 +25,6 @@ int main() {
         for (int i = 0; i < INSIZE; i++) {
             f[i] = ((double)in[i]) / 32768.0;
         }
-        gate.filter(f, INSIZE);
         shifter.process(f, INSIZE);
         while (true) {
             int readCount = shifter.read(fout, OUTSIZE);
@@ -33,6 +32,7 @@ int main() {
             if (readCount < 0) {
                 break;
             }
+            gate.filter(fout, OUTSIZE);
             for (int i = 0; i < OUTSIZE; i++) {
                 out[i] = short(fout[i] * 32767.0);
             }

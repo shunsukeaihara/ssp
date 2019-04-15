@@ -15,6 +15,7 @@ class RingBuffer {
         _readHead = 0;
         _pos = 0;
     }
+
     virtual ~RingBuffer() {
         delete _buffer;
     }
@@ -39,6 +40,27 @@ class RingBuffer {
         _buffer[relativeToabsolute(index)] = val;
     }
 
+    inline T crossCorrelate(const int index, T *ref, T *window, const int len) {
+        T ret = 0.0;
+        int start = relativeToabsolute(index);
+        if (start + len < _capasity) {
+            for (int i = 0; i < len; i++) {
+                ret += ref[i] * _buffer[i + start] * window[i] * window[i];
+            }
+            return ret;
+        } else {
+            int cap = _capasity - start;
+            for (int i = 0; i < cap; i++) {
+                ret += ref[i] * _buffer[i + start] * window[i] * window[i];
+            }
+            int rest = len - cap;
+            for (int i = 0; i < rest; i++) {
+                ret += ref[cap + i] * _buffer[i] * window[cap + i] * window[cap + i];
+            }
+            return ret;
+        }
+    }
+
     void movePos(int offset) {
         // -を想定していない
         int moved = _pos + offset;
@@ -59,7 +81,7 @@ class RingBuffer {
         }
     }
 
-    void write(T *in, int len) {
+    void write(const T *in, int len) {
         int rest = _capasity - _writeHead;
         if (rest > len) {
             memcpy(&_buffer[_writeHead], in, sizeof(T) * len);
@@ -130,7 +152,7 @@ class RingBuffer {
         _readHead = 0;
     }
 
-   private:
+   protected:
     const int _capasity;
     T *_buffer;
     int _writeHead;

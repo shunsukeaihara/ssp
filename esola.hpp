@@ -2,10 +2,9 @@
 #define ESOLA_H_
 
 #include <common.hpp>
+#include <iostream>
+#include <ringbuffer.hpp>
 #include <window.hpp>
-#include <zfr_epoch_detector.hpp>
-
-#define SSP_ZFR_AVEGERA_WINDOW_IN_SEC 0.006
 
 namespace ssp {
 
@@ -21,8 +20,6 @@ template <class T>
 class ESOLA {
    public:
     ESOLA(T tsr, int frameSize, int inputsize, T fs) : _frameSize(frameSize), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {
-        _zfr = new ZFREpochDetector<T>(int(fs * SSP_ZFR_AVEGERA_WINDOW_IN_SEC), inputsize, -2, 1);
-        _epochBuffer = new T[inputsize * 2];
         _a = tsr;
         _ss = frameSize / 2;
         _sa = round(_ss / _a);
@@ -32,16 +29,13 @@ class ESOLA {
     }
 
     virtual ~ESOLA() {
-        delete _zfr;
-        delete _epochBuffer;
         delete _window;
     }
 
     void process(const T *in, const int len) {
         if (len <= 0) return;
         // _epochbufferにepoch mark付与済みの信号が書き込まれる。初回はlenよりも若干少ないデータ数が処理される
-        int outsize = _zfr->process(in, len, _epochBuffer);
-        _analysisBuffer.write(_epochBuffer, outsize);
+        _analysisBuffer.write(in, len);
         // count epoch size
         while (true) {
             // analysis frameが最低限取得出来るだけの容量が無いと終了
@@ -84,9 +78,7 @@ class ESOLA {
     const T _fs;
     RingBuffer<T> _analysisBuffer;
     RingBuffer<T> _synthesisBuffer;
-    ZFREpochDetector<T> *_zfr;
     T *_window;
-    T *_epochBuffer;
     T _a;
     int _ss;
     int _sa;

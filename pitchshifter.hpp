@@ -5,29 +5,35 @@
 #include <esola.hpp>
 #include <resampler.hpp>
 #include <ringbuffer.hpp>
+#include <zfr_epoch_detector.hpp>
 
 namespace ssp {
 
 template <class T>
 class PitchShifter {
    public:
-    PitchShifter(T shiftrate, int insize, int internalBufferSize, T fs) : _internalBufferSize(internalBufferSize) {
+    PitchShifter(T shiftrate, T zfrWinSec, int insize, int internalBufferSize, T fs) : _internalBufferSize(internalBufferSize) {
+        _zfrBuffer = new T[insize];
         _esolaBuffer = new T[internalBufferSize];
         _resampledBuffer = new T[int(internalBufferSize * shiftrate * 2.5)];
         _outputBuffer = new RingBuffer<T>(internalBufferSize * 11);
         _resampler = new Resampler<T>(fs * shiftrate, fs, insize);
+        _zfr = new ZFREpochDetector<T>(fs * zfrWinSec, insize, -2, 1);
         _esola = new ESOLA<T>(shiftrate, fs * 0.02, insize, fs);
     }
     virtual ~PitchShifter() {
+        delete _zfr;
         delete _esola;
         delete _resampler;
         delete _esolaBuffer;
+        delete _zfrBuffer;
         delete _resampledBuffer;
         delete _outputBuffer;
     }
 
     void process(T *in, int len) {
-        _esola->process(in, len);
+        size_t zfrOut = _zfr->process(in, len, _zfrBuffer);
+        _esola->process(_zfrBuffer, zfrOut);
         while (_esola->read(_esolaBuffer, _internalBufferSize) > 0) {
             int resampled = _resampler->process(_esolaBuffer, _internalBufferSize, _resampledBuffer);
             _outputBuffer->write(_resampledBuffer, resampled);
@@ -41,8 +47,10 @@ class PitchShifter {
 
    private:
     ESOLA<T> *_esola;
+    ZFREpochDetector<T> *_zfr;
     Resampler<T> *_resampler;
     RingBuffer<T> *_outputBuffer;
+    T *_zfrBuffer;
     T *_esolaBuffer;
     T *_resampledBuffer;
     int _internalBufferSize;
