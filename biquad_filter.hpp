@@ -18,6 +18,11 @@ inline T calcAlpha(T omega, T q) {
     return sin(omega) / (2.0 * q);
 }
 
+template <typename T>
+inline T calcA(T dbGain) {
+    return pow(10, dbGain / 40);
+}
+
 template <class T>
 class BiquadFilter {
    public:
@@ -49,11 +54,97 @@ class BiquadFilter {
         T omega = calcOmega(fs, cutoff);
         T alpha = calcAlpha(omega, q);
         T a0 = 1.0 + alpha;
-        T a1 = -(2.0 * cos(omega));
+        T a1 = -2.0 * cos(omega);
         T a2 = 1.0 - alpha;
         T b0 = (1.0 + cos(omega)) / 2.0;
         T b1 = -(1.0 + cos(omega));
         T b2 = (1.0 - cos(omega)) / 2.0;
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createConstantSkirtBandPassfilter(T fs, T cutoff, T q) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T a0 = 1.0 + alpha;
+        T a1 = -2.0 * cos(omega);
+        T a2 = 1.0 - alpha;
+        T b0 = q * alpha;
+        T b1 = 0;
+        T b2 = -q * alpha;
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createConstantPeakBandPassfilter(T fs, T cutoff, T q) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T a0 = 1.0 + alpha;
+        T a1 = -2.0 * cos(omega);
+        T a2 = 1.0 - alpha;
+        T b0 = alpha;
+        T b1 = 0;
+        T b2 = -alpha;
+    }
+
+    static BiquadFilter<T> *createNotchfilter(T fs, T cutoff, T q) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T a0 = 1.0 + alpha;
+        T a1 = -2.0 * cos(omega);
+        T a2 = 1.0 - alpha;
+        T b0 = 1.0;
+        T b1 = -2.0 * cos(omega);
+        T b2 = 1.0;
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createAllPassfilter(T fs, T cutoff, T q) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T a0 = 1.0 + alpha;
+        T a1 = -2.0 * cos(omega);
+        T a2 = 1.0 - alpha;
+        T b0 = 1.0 - alpha;
+        T b1 = -2.0 * cos(omega);
+        T b2 = 1.0 + alpha;
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createPeakingEQ(T fs, T cutoff, T q, T dbGain) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T A = calcA(dbGain);
+        T a0 = 1.0 + alpha / A;
+        T a1 = -(2.0 * cos(omega));
+        T a2 = 1.0 - alpha * A;
+        T b0 = 1.0 + alpha * A;
+        T b1 = -2.0 * cos(omega);
+        T b2 = 1.0 - alpha / A;
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createLowShelfFilter(T fs, T cutoff, T q, T dbGain) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T A = calcA(dbGain);
+        T a0 = (1.0 + A) + (1.0 + A) * cos(omega) + 2.0 * sqrt(A) * alpha;
+        T a1 = 2 * ((A - 1) - (A + 1) * cos(omega));
+        T a2 = (A + 1.0) - (A - 1.0) * cos(omega) - 2.0 * sqrt(A) * alpha;
+        T b0 = A * (((A + 1.0) * cos(omega) + 2.0 * sqrt(A) * alpha));
+        T b1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * cos(omega));
+        T b2 = A * ((A + 1.0) - (A - 1.0) * cos(omega) - 2.0 * sqrt(A) * alpha);
+        return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
+    }
+
+    static BiquadFilter<T> *createHighShelfFilter(T fs, T cutoff, T q, T dbGain) {
+        T omega = calcOmega(fs, cutoff);
+        T alpha = calcAlpha(omega, q);
+        T A = calcA(dbGain);
+        T a0 = (A + 1.0) - (A - 1.0) * cos(omega) + 2.0 * sqrt(A) * alpha;
+        T a1 = 2.0 * ((A - 1.0) - (A + 1.0) * cos(omega));
+        T a2 = (A + 1.0) - (A - 1.0) * cos(omega) - 2.0 * sqrt(A) * alpha;
+        T b0 = A * ((A + 1.0) + (A - 1.0) * cos(omega) + 2.0 * sqrt(A) * alpha);
+        T b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cos(omega));
+        T b2 = A * ((A + 1.0) + (A - 1.0) * cos(omega) - 2.0 * sqrt(A) * alpha);
         return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
     }
 

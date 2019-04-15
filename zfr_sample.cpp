@@ -22,7 +22,7 @@ int main() {
         }
         size_t processed = zfr.process(f, INSIZE, fout);
         for (int i = 0; i < processed; i++) {
-            //
+            // 片側にepoch embding
             out[i * 2] = short(fout[i] * 32767.0);
             out[i * 2 + 1] = short(isEpochMark(fout[i]) * 32767);
         }
