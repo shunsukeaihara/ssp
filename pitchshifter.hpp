@@ -12,14 +12,14 @@ namespace ssp {
 template <class T>
 class PitchShifter {
    public:
-    PitchShifter(T shiftrate, T zfrWinSec, int insize, int internalBufferSize, T fs) : _internalBufferSize(internalBufferSize) {
+    PitchShifter(T shiftrate, T zfrWinSec, T esolaWinSec, int insize, int internalBufferSize, T fs) : _internalBufferSize(internalBufferSize) {
         _zfrBuffer = new T[insize];
         _esolaBuffer = new T[internalBufferSize];
         _resampledBuffer = new T[int(internalBufferSize * shiftrate * 2.5)];
         _outputBuffer = new RingBuffer<T>(internalBufferSize * 11);
         _resampler = new Resampler<T>(fs * shiftrate, fs, insize);
         _zfr = new ZFREpochDetector<T>(fs * zfrWinSec, insize, -2, 1);
-        _esola = new ESOLA<T>(shiftrate, fs * 0.02, insize, fs);
+        _esola = new ESOLA<T>(shiftrate, fs * esolaWinSec, insize, fs);
     }
     virtual ~PitchShifter() {
         delete _zfr;
