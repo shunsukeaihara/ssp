@@ -58,7 +58,7 @@ class BiquadFilter {
         T a2 = 1.0 - alpha;
         T b0 = (1.0 + cos(omega)) / 2.0;
         T b1 = -(1.0 + cos(omega));
-        T b2 = (1.0 - cos(omega)) / 2.0;
+        T b2 = (1.0 + cos(omega)) / 2.0;
         return new BiquadFilter<T>(a0, a1, a2, b0, b1, b2);
     }
 
