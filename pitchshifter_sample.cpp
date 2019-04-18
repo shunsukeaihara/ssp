@@ -19,7 +19,7 @@ int main() {
     Compressor<double> comp = Compressor<double>(1, 100, -1, 1.0, FS);
     Limitter<double> limit = Limitter<double>(1, 100, -1, FS);
     BiquadFilter<double> *hpf = BiquadFilter<double>::createHighPassfilter(FS, 40, 1.0);
-    BiquadFilter<double> *shelping = BiquadFilter<double>::createLowShelfFilter(FS, 400, 1.5, 15.0);
+    BiquadFilter<double> *shelf = BiquadFilter<double>::createLowShelfFilter(FS, 400, 1.5, 15.0);
     ButterworthFilter<double> *lpfilter = ButterworthFilter<double>::createLowPassFilter(FS, 5500, 8);
 
     short in[INSIZE];
@@ -31,7 +31,7 @@ int main() {
         for (int i = 0; i < INSIZE; i++) {
             double x = ((double)in[i]) / 32768.0;
             x = hpf->filterOne(x);
-            x = shelping->filterOne(x);
+            x = shelf->filterOne(x);
             f[i] = x;
         }
         shifter.process(f, INSIZE);
@@ -54,6 +54,6 @@ int main() {
         if (nread < INSIZE * 2) break;
     }
     delete hpf;
-    delete shelping;
+    delete shelf;
     delete lpfilter;
 }
