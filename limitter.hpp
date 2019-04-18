@@ -11,7 +11,7 @@ namespace ssp {
 template <class T>
 class Limitter {
    public:
-    Limitter(const T attackMs, const T releaseMs, const T threshDb, const T fs) : _peakHold(fs * attackMs / 1000.0), _env(EnvelopeGenerator(attackMs / 5.0, releaseMs / 5.0, fs)) {
+    Limitter(const T attackMs, const T releaseMs, const T threshDb, const T fs) : _peakHold(fs * attackMs / 1000.0), _mask(SSP_LIMITTER_BUFFERSIZE - 1), _env(EnvelopeGenerator<T>(attackMs / 5.0, releaseMs / 5.0, fs)) {
         _threshold = db2lin(threshDb);
         _buffer = new T[SSP_LIMITTER_BUFFERSIZE]();
         reset();
@@ -29,10 +29,10 @@ class Limitter {
     }
 
     inline T filterOne(const T in) {
-        T gain = calcGain(in);
-        unsigned int idx = (_cursor - _holdCount) & _mask;  // mod 1024
-        ++_cursor &= _mask;
+        T gain = calcGain(fabs(in));
+        unsigned int idx = (_cursor - _peakHold) & _mask;  // mod 1024
         _buffer[_cursor] = in;
+        ++_cursor &= _mask;
         return _buffer[idx] * gain;
     }
 
@@ -44,8 +44,8 @@ class Limitter {
 
    private:
     T _threshold;
-    const int _mask = SSP_LIMITTER_BUFFERSIZE - 1;
     const int _peakHold;
+    const int _mask;
     unsigned int _holdCount;
     unsigned int _cursor;
 
@@ -54,9 +54,9 @@ class Limitter {
     T *_buffer;
     EnvelopeGenerator<T> _env;
 
-    inline T calcGain(const T in) {
-        T key = fabs(in);
-        if (key < _thresh) key = _thresh;
+    // keyは絶対値
+    inline T calcGain(T key) {
+        if (key < _threshold) key = _threshold;
         if ((++_holdCount >= _peakHold) || (key > _peak)) {
             _holdCount = 0;
             _peak = key;

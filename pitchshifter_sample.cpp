@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <common.hpp>
+#include <compressor.hpp>
 #include <iostream>
+#include <limitter.hpp>
 #include <noisegate.hpp>
 #include <pitchshifter.hpp>
 
@@ -13,6 +15,8 @@ using namespace ssp;
 int main() {
     PitchShifter<double> shifter = PitchShifter<double>(0.8, 1.0, 20.0, INSIZE, 620, FS);
     NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
+    Compressor<double> comp = Compressor<double>(1, 100, -1, 1.0, FS);
+    Limitter<double> limit = Limitter<double>(1, 100, -1, FS);
     short in[INSIZE];
     double f[INSIZE];
     double fout[OUTSIZE];
@@ -28,9 +32,13 @@ int main() {
             if (readCount < 0) {
                 break;
             }
-            gate.filter(fout, OUTSIZE);
             for (int i = 0; i < OUTSIZE; i++) {
-                out[i] = short(fout[i] * 32767.0);
+                double x = fout[i];
+                x = gate.filterOne(x);
+                x *= 6;
+                x = comp.filterOne(x);
+                x = limit.filterOne(x);
+                out[i] = short(x * 32767.0);
             }
             write(1, (char*)out, OUTSIZE * 2);
         }
