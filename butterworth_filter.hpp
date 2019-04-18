@@ -12,40 +12,40 @@ using std::complex;
 using std::vector;
 
 template <typename T>
-inline void calcPoles(vector<complex<T> > &poles, const int order) {
+inline void calcPoles(vector<complex<T> > *poles, int order) {
     for (int i = 0; i < (order + 1) / 2; i++) {
         T theta = (2.0 * i + 1.0) * M_PI / (2.0 * order);
         T real = -sin(theta);
         T imag = cos(theta);
-        poles.push_back(complex<T>(real, imag));
-        poles.push_back(complex<T>(real, -imag));
+        poles->push_back(complex<T>(real, imag));
+        poles->push_back(complex<T>(real, -imag));
     }
 }
 
 template <typename T>
-inline T bilinearTransform(complex<T> &sz) {
+inline T bilinearTransform(complex<T> *sz) {
     complex<T> two = complex<T>(2.0, 0);
-    complex<T> s = sz;
-    sz = (two + s) / (two - s);
+    complex<T> s = *sz;
+    *sz = (two + s) / (two - s);
     return std::abs(complex<T>(two - s));
 }
 
 template <typename T>
-inline T splane2zplane(vector<complex<T> > &zeros,
-                       vector<complex<T> > &poles, const T gain) {
+inline T splane2zplane(vector<complex<T> > *zeros,
+                       vector<complex<T> > *poles, const T gain) {
     T ret = gain;
-    for (int i = 0; i < zeros.size(); i++) {
-        ret /= bilinearTransform(zeros[i]);
+    for (int i = 0; i < zeros->size(); i++) {
+        ret /= bilinearTransform(&zeros->at(i));
     }
-    for (int i = 0; i < poles.size(); i++) {
-        ret *= bilinearTransform(poles[i]);
+    for (int i = 0; i < poles->size(); i++) {
+        ret *= bilinearTransform(&poles->at(i));
     }
     return ret;
 }
 
 template <typename T>
-int zplane2SecondOrderSection(const vector<complex<T> > zeros,
-                              const vector<complex<T> > poles, const int filterNum,
+int zplane2SecondOrderSection(const vector<complex<T> > &zeros,
+                              const vector<complex<T> > &poles, const int filterNum,
                               vector<T> &coeffs) {
     vector<complex<T> > zerosTemp(zeros);
     zerosTemp.resize(filterNum);
@@ -88,7 +88,7 @@ class ButterworthFilter {
         vector<complex<T> > zeros;
         vector<complex<T> > poles;
         vector<T> coeffs;
-        calcPoles(poles, order);
+        calcPoles(&poles, order);
         size_t numPoles = poles.size();
         T gain = 1.0;
         gain *= pow(wrapedCutoff, numPoles);
@@ -96,7 +96,7 @@ class ButterworthFilter {
         for (int i = 0; i < numPoles; i++) {
             poles[i] *= complex<T>(wrapedCutoff, 0);
         }
-        gain = splane2zplane(zeros, poles, gain);
+        gain = splane2zplane(&zeros, &poles, gain);
         T overallGain = preGain * (preGain / gain);
         zplane2SecondOrderSection(zeros, poles, numPoles, coeffs);
         return new ButterworthFilter<T>(coeffs, order / 2, overallGain);

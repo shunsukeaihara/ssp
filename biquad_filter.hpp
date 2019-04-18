@@ -180,7 +180,7 @@ class BiquadFilter {
 template <class T>
 class BiquadCascade {
    public:
-    BiquadCascade(vector<T> &coeffs, const int filterNum, const T overallGain) : _overallGain(overallGain) {
+    BiquadCascade(const vector<T> &coeffs, const int filterNum, const T overallGain) : _overallGain(overallGain) {
         for (int i = 0; i < filterNum; i++) {
             _filters.push_back(new BiquadFilter<T>(1.0, coeffs[4 * i], coeffs[4 * i + 1], 1.0, coeffs[4 * i + 2], coeffs[4 * i + 3]));
         }

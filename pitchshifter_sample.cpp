@@ -11,7 +11,7 @@ using namespace ssp;
 #define FS 48000.0
 
 int main() {
-    PitchShifter<double> shifter = PitchShifter<double>(0.8, 0.001, 0.02, INSIZE, 620, FS);
+    PitchShifter<double> shifter = PitchShifter<double>(0.8, 1.0, 20.0, INSIZE, 620, FS);
     NoiseGate<double> gate = NoiseGate<double>(5, 50, -50.0, FS);
     short in[INSIZE];
     double f[INSIZE];

@@ -12,14 +12,14 @@ namespace ssp {
 template <class T>
 class PitchShifter {
    public:
-    PitchShifter(T shiftrate, T zfrWinSec, T esolaWinSec, int insize, int internalBufferSize, T fs) : _internalBufferSize(internalBufferSize) {
+    PitchShifter(const T shiftrate, const T zfrWinMs, const T esolaWinMs, const int insize, const int internalBufferSize, const T fs) : _internalBufferSize(internalBufferSize) {
         _zfrBuffer = new T[insize];
         _esolaBuffer = new T[internalBufferSize];
         _resampledBuffer = new T[int(internalBufferSize * shiftrate * 2.5)];
         _outputBuffer = new RingBuffer<T>(internalBufferSize * 11);
         _resampler = new Resampler<T>(fs * shiftrate, fs, insize);
-        _zfr = new ZFREpochDetector<T>(fs * zfrWinSec, insize, -2, 1);
-        _esola = new ESOLA<T>(shiftrate, fs * esolaWinSec, insize, fs);
+        _zfr = new ZFREpochDetector<T>(zfrWinMs, insize, -2, 1, fs);
+        _esola = new ESOLA<T>(shiftrate, esolaWinMs, insize, fs);
     }
     virtual ~PitchShifter() {
         delete _zfr;
@@ -31,7 +31,7 @@ class PitchShifter {
         delete _outputBuffer;
     }
 
-    void process(T *in, int len) {
+    void process(const T *in, const int len) {
         size_t zfrOut = _zfr->process(in, len, _zfrBuffer);
         _esola->process(_zfrBuffer, zfrOut);
         while (_esola->read(_esolaBuffer, _internalBufferSize) > 0) {
@@ -40,7 +40,7 @@ class PitchShifter {
         }
     }
 
-    int read(T *out, int len) {
+    int read(T *out, const int len) {
         if (!_outputBuffer->filled(len)) return -1;
         return _outputBuffer->read(out, len);
     }

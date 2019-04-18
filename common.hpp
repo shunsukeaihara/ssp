@@ -45,12 +45,12 @@ static inline T nyquistFromTwo(int a, int b) {
 }
 
 template <typename T>
-static inline T lin2dB(T lin) {
+static inline T lin2dB(const T lin) {
     return log(lin) * SSP_LOG_2_DB;
 }
 
 template <typename T>
-static inline T db2lin(T db) {
+static inline T db2lin(const T db) {
     return exp(db * SSP_DB_2_LOG);
 }
 

@@ -6,11 +6,11 @@ using namespace ssp;
 
 #define INSIZE 2048
 #define OUTSIZE 2048
-#define ZFR_AVEGERA_WINDOW_IN_SEC 0.001
+#define ZFR_AVEGERA_WINDOW_IN_MS 1
 #define FS 48000.0
 
 int main() {
-    ZFREpochDetector<double> zfr = ZFREpochDetector<double>(FS * ZFR_AVEGERA_WINDOW_IN_SEC, INSIZE, -2, 1);
+    ZFREpochDetector<double> zfr = ZFREpochDetector<double>(1, INSIZE, -2, 1, FS);
     short in[INSIZE];
     double f[INSIZE];
     double fout[OUTSIZE];

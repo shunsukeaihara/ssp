@@ -8,7 +8,7 @@ namespace ssp {
 template <class T>
 class RingBuffer {
    public:
-    RingBuffer(int capasity) : _capasity(capasity) {
+    RingBuffer(const int capasity) : _capasity(capasity) {
         _buffer = new T[capasity];
         std::fill_n(_buffer, _capasity, 0);
         _writeHead = 0;
@@ -36,11 +36,11 @@ class RingBuffer {
         return _buffer[relativeToabsolute(index)];
     }
 
-    inline void set(const int index, T val) {
+    inline void set(const int index, const T val) {
         _buffer[relativeToabsolute(index)] = val;
     }
 
-    inline T crossCorrelate(const int index, T *ref, T *window, const int len) {
+    inline T crossCorrelate(const int index, const T *ref, const T *window, const int len) {
         T ret = 0.0;
         int start = relativeToabsolute(index);
         if (start + len < _capasity) {
@@ -61,7 +61,7 @@ class RingBuffer {
         }
     }
 
-    void movePos(int offset) {
+    void movePos(const int offset) {
         // -を想定していない
         int moved = _pos + offset;
         if (moved < _capasity) {
@@ -71,7 +71,7 @@ class RingBuffer {
         }
     }
 
-    void moveWritePos(int offset) {
+    void moveWritePos(const int offset) {
         // -を想定していない
         int moved = _writeHead + offset;
         if (moved < _capasity) {
@@ -81,7 +81,7 @@ class RingBuffer {
         }
     }
 
-    void write(const T *in, int len) {
+    void write(const T *in, const int len) {
         int rest = _capasity - _writeHead;
         if (rest > len) {
             memcpy(&_buffer[_writeHead], in, sizeof(T) * len);
@@ -94,7 +94,7 @@ class RingBuffer {
         }
     }
 
-    int read(T *out, int len) {
+    int read(T *out, const int len) {
         int readSize = _read(out, len);
         if (readSize > 0) {
             _readHead = relativeToabsoluteReadPos(readSize);
@@ -102,7 +102,7 @@ class RingBuffer {
         return readSize;
     }
 
-    int readWithSlide(T *out, int len, int offset) {
+    int readWithSlide(T *out, const int len, const int offset) {
         int readSize = _read(out, len);
         if (readSize > 0) {
             _readHead = relativeToabsoluteReadPos(offset);
@@ -110,7 +110,7 @@ class RingBuffer {
         return readSize;
     }
 
-    bool filled(int len) {
+    bool filled(const int len) const {
         if (_writeHead >= _readHead) {
             return (_writeHead - _readHead) >= len;
         } else {

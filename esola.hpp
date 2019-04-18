@@ -9,7 +9,7 @@
 namespace ssp {
 
 template <typename T>
-int findFirstEpoch(const RingBuffer<T> &in, int offset, int maxIndex) {
+int findFirstEpoch(const RingBuffer<T> &in, const int offset, const int maxIndex) {
     for (int i = offset; i < maxIndex; i++) {
         if (isEpochMark(in[i])) return i;
     }
@@ -19,9 +19,9 @@ int findFirstEpoch(const RingBuffer<T> &in, int offset, int maxIndex) {
 template <class T>
 class ESOLA {
    public:
-    ESOLA(T tsr, int frameSize, int inputsize, T fs) : _frameSize(frameSize), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {
+    ESOLA(T tsr, T winMs, int inputsize, T fs) : _frameSize(fs * winMs / 1000.0), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {
         _a = tsr;
-        _ss = frameSize / 2;
+        _ss = _frameSize / 2;
         _sa = round(_ss / _a);
         _l = _frameSize - _ss;
         _window = new T[_l * 2];

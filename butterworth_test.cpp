@@ -13,7 +13,7 @@ using namespace ssp;
 
 void calcPolesTest() {
     vector<complex<double> > poles;
-    calcPoles(poles, 8);
+    calcPoles(&poles, 8);
     vector<complex<double> > base(8);
     base[0] = complex<double>(-0.19509032201613, 0.98078528040323);
     base[1] = complex<double>(-0.19509032201613, -0.98078528040323);

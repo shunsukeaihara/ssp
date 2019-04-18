@@ -26,7 +26,7 @@ class Resampler {
         delete _filter;
     }
 
-    int process(T *in, int len, T *out) {
+    int process(const T *in, const int len, T *out) {
         int bufferLen = upsampling(in, len);
         return downsampling(bufferLen, out);
     }
@@ -48,7 +48,7 @@ class Resampler {
     int _toDiv;
     ButterworthFilter<T> *_filter;
 
-    inline int upsampling(T *in, int len) {
+    inline int upsampling(const T *in, const int len) {
         if (_fromMul > 1) {
             int j, k;
             for (int i = 0; i < len; i++) {

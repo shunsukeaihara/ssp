@@ -10,7 +10,7 @@ namespace ssp {
 template <class T>
 class ZFREpochDetector {
    public:
-    ZFREpochDetector(int avgWindow, int insize, T a1, T a2) : _avgWindow(avgWindow), _insize(insize), _a1(a1), _a2(a2), _s(RingBuffer<T>(insize + avgWindow * 2)), _y2(RingBuffer<T>(insize + avgWindow * 2)) {
+    ZFREpochDetector(const T winMs, const int insize, const T a1, const T a2, const T fs) : _avgWindow(fs * winMs / 1000.0), _insize(insize), _a1(a1), _a2(a2), _fs(fs), _s(RingBuffer<T>(insize + _avgWindow * 2)), _y2(RingBuffer<T>(insize + _avgWindow * 2)) {
         _startOffset = 0;
         _y1_1 = 0;
         _y1_2 = 0;
@@ -77,6 +77,7 @@ class ZFREpochDetector {
     const int _insize;
     const T _a1;
     const T _a2;
+    const T _fs;
     RingBuffer<T> _s;
     RingBuffer<T> _y2;
     int _startOffset;

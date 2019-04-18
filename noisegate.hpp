@@ -10,31 +10,19 @@ namespace ssp {
 template <class T>
 class NoiseGate {
    public:
-    NoiseGate(T attackMs, T releaseMs, T threshDb, T fs) : _env(EnvelopeGenerator<T>(attackMs / 3.0, releaseMs / 3.0, fs)) {
+    NoiseGate(T attackMs, T releaseMs, T threshDb, T fs) : _env(EnvelopeGenerator<T>(attackMs, releaseMs, fs)) {
         _threshold = db2lin(threshDb);
     }
     virtual ~NoiseGate(){};
 
-    inline void filterStereo(T *in, int len) {
-        for (int i = 0; i < len * 2; i += 2) {
-            filterOneStereo(in[i], in[i + 1]);
-        }
-    }
-
-    inline void filter(T *in, int len) {
+    inline void filter(T *in, const int len) {
         for (int i = 0; i < len; i++) {
-            in[i] *= filterOne(in[i]);
+            in[i] *= calcGain(in[i]);
         }
     }
 
-    inline T filterOne(T in) {
-        return calcGain(fabs(in));
-    }
-
-    inline void filterOneStereo(T &in1, T &in2) {
-        T gain = calcGain(std::max(fabs(in1), fabs(in2)));
-        in1 *= gain;
-        in2 *= gain;
+    inline T filterOne(const T in) {
+        return calcGain(fabs(in)) * in;
     }
 
     void reset() {
@@ -47,7 +35,7 @@ class NoiseGate {
     EnvelopeGenerator<T> _env;
 
     // keyは必ず絶対値を受け取る
-    inline T calcGain(T key) {
+    inline T calcGain(const T key) {
         return _env.filterOne(T(key > _threshold));
     }
 };
