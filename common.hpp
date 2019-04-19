@@ -54,5 +54,16 @@ static inline T db2lin(const T db) {
     return exp(db * SSP_DB_2_LOG);
 }
 
+template <typename T>
+static inline T clip(const T x, const T low, const T high) {
+    if (x > high) {
+        return high;
+    } else if (x < low) {
+        return low;
+    } else {
+        return x;
+    }
+}
+
 }  // namespace ssp
 #endif
