@@ -158,7 +158,7 @@ class RingBuffer {
         (*this)[0] = x;
     }
 
-   protected:
+   private:
     const int _capasity;
     T *_buffer;
     int _writeHead;
