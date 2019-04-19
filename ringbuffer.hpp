@@ -152,6 +152,12 @@ class RingBuffer {
         _readHead = 0;
     }
 
+    inline void push(const T x) {
+        movePos(1);
+        moveWritePos(1);
+        (*this)[0] = x;
+    }
+
    protected:
     const int _capasity;
     T *_buffer;

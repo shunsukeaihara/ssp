@@ -2,7 +2,7 @@ CC :=g++
 CFLAGS := -I. -Wall
 LDFLAGS :=
 
-test: test_butterworth sample_resampler sample_esola test_ringbuffer sample_pitchshifter sample_zfr
+test: test_butterworth sample_resampler sample_esola test_ringbuffer test_delay sample_pitchshifter sample_zfr
 
 test_butterworth:
 	mkdir -p test
@@ -27,6 +27,11 @@ test_ringbuffer:
 	mkdir -p test
 	$(CC) $(CFLAGS) $(LDFLAGS) -o test/ringbuffer_test ringbuffer_test.cpp
 	test/ringbuffer_test
+
+test_delay:
+	mkdir -p test
+	$(CC) $(CFLAGS) $(LDFLAGS) -o test/delay_test delay_test.cpp
+	test/delay_test
 
 sample_zfr:
 	mkdir -p test
