@@ -9,8 +9,7 @@ template <class T>
 class Distortion {
    public:
     Distortion(const T amount) {
-        _amount = amount;
-        _k = 2 * amount / (1.1 - amount);
+        setAmount(amount);
     }
     virtual ~Distortion() {}
 
@@ -25,28 +24,19 @@ class Distortion {
     }
 
     inline void setAmount(const T amount) {
-        if (amount <= 0) {
-            _amount = 0.0;
-        } else {
-            _amount = amount;
-        }
-        _k = 2 * amount / (1.1 - amount);
+        _amount = clip(amount, -0.999, 0.997);
+        _k = 2 * _amount / (1.1 - _amount);
     }
 
    private:
     T _amount;
     T _k;
 
+    // https://github.com/meta-meta/MaxPatches/blob/master/_3rdParty/stkr.waveshaping/absAndGenExprCode/stkr.waveshaping.genexpr
+
     inline T waveShaper(const T x) {
         // simple distortion
         return (1 + _k) * x / (1 + _k * fabs(x));
-    }
-
-    inline T watteShaper(const T in) {
-        // simple overdrive
-        T x = tanh(in);
-        x = clip(x * _amount, -1, 1);
-        return 1.5 * x - 0.5 * x * x * x;
     }
 };
 
