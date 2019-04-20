@@ -5,40 +5,39 @@ LDFLAGS :=
 test: test_butterworth sample_resampler sample_esola test_ringbuffer test_delay sample_pitchshifter sample_zfr
 
 test_butterworth:
-	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/butterworth_test butterworth_test.cpp
-	test/butterworth_test
-
-sample_resampler:
-	mkdir -p test
-	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/resampler_sample resampler_sample.cpp
-
-sample_esola:
-	mkdir -p test
-	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/esola_sample esola_sample.cpp
-	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
-
-sample_pitchshifter:
-	mkdir -p test
-	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o test/pitchshifter_sample pitchshifter_sample.cpp
-	# sox sample.wav -t raw - | test/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
+	mkdir -p tests/bin/
+	$(CC) $(CFLAGS) $(LDFLAGS) -o tests/bin/butterworth_test tests/butterworth_test.cpp
+	tests/bin/butterworth_test
 
 test_ringbuffer:
-	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/ringbuffer_test ringbuffer_test.cpp
-	test/ringbuffer_test
+	mkdir -p tests/bin/
+	$(CC) $(CFLAGS) $(LDFLAGS) -o tests/bin/ringbuffer_test tests/ringbuffer_test.cpp
+	tests/bin/ringbuffer_test
 
 test_delay:
-	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/delay_test delay_test.cpp
-	test/delay_test
+	mkdir -p tests/bin/
+	$(CC) $(CFLAGS) $(LDFLAGS) -o tests/bin/delay_test tests/delay_test.cpp
+	tests/bin/delay_test
 
 sample_zfr:
-	mkdir -p test
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test/zfr_sample zfr_sample.cpp
-	# test/ringbuffer_test
+	mkdir -p samples/bin/
+	$(CC) $(CFLAGS) $(LDFLAGS) -o samples/bin/zfr_sample samples/zfr_sample.cpp
+
+sample_resampler:
+	mkdir -p samples/bin/
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/resampler_sample samples/resampler_sample.cpp
+
+sample_esola:
+	mkdir -p samples/bin/
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/esola_sample samples/esola_sample.cpp
+	# sox sample.wav -t raw - | samples/bin/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
+
+sample_pitchshifter:
+	mkdir -p samples/bin/
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/pitchshifter_sample samples/pitchshifter_sample.cpp
+	# sox sample.wav -t raw - | samples/bin/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
+
 
 clean:
-	rm -rf *.o
-	rm -rf esola
-	rm -rf test/*
+	rm -rf tests/bin/*
+	rm -rf samples/bin/*
