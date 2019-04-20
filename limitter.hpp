@@ -3,38 +3,32 @@
 
 #include <common.hpp>
 #include <envelope.hpp>
-
-#define SSP_LIMITTER_BUFFERSIZE 1024
+#include <ringbuffer.hpp>
 
 namespace ssp {
 
 template <class T>
 class Limitter {
    public:
-    Limitter(const T attackMs, const T releaseMs, const T threshDb, const T fs) : _peakHold(fs * attackMs / 1000.0), _mask(SSP_LIMITTER_BUFFERSIZE - 1), _env(EnvelopeGenerator<T>(attackMs / 5.0, releaseMs / 5.0, fs)) {
+    Limitter(const T attackMs, const T releaseMs, const T threshDb, const T fs) : _peakHold(fs * attackMs / 1000.0), _buffer(RingBuffer<T>(_peakHold + 1)), _env(EnvelopeGenerator<T>(attackMs / 5.0, releaseMs / 5.0, fs)) {
         _threshold = db2lin(threshDb);
-        _buffer = new T[SSP_LIMITTER_BUFFERSIZE]();
         reset();
     }
 
     virtual ~Limitter() {
-        delete _buffer;
     }
 
     void reset() {
         _peak = _threshold;
         _envelope = _threshold;
         _holdCount = 0;
-        _cursor = 0;
-        std::fill_n(_buffer, SSP_LIMITTER_BUFFERSIZE, 0);
+        _buffer.reset();
     }
 
     inline T filterOne(const T in) {
+        _buffer.push(in);
         T gain = calcGain(fabs(in));
-        unsigned int idx = (_cursor - _peakHold) & _mask;  // mod 1024
-        _buffer[_cursor] = in;
-        ++_cursor &= _mask;
-        return _buffer[idx] * gain;
+        return _buffer[-_peakHold] * gain;
     }
 
     inline void filter(T *in, const int len) {
@@ -44,15 +38,12 @@ class Limitter {
     }
 
    private:
-    T _threshold;
     const int _peakHold;
-    const int _mask;
+    RingBuffer<T> _buffer;
     unsigned int _holdCount;
-    unsigned int _cursor;
-
+    T _threshold;
     T _peak;
     T _envelope;
-    T *_buffer;
     EnvelopeGenerator<T> _env;
 
     // keyは絶対値
