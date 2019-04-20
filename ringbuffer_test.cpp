@@ -1,5 +1,5 @@
+#include <assert.h>
 #include <common.hpp>
-#include <iostream>
 #include <ringbuffer.hpp>
 
 using namespace ssp;
@@ -11,70 +11,47 @@ int main() {
     float ref[3] = {1.0, 2.0, 3.0};
     buffer.write(in, 3);
     setEpochMark(buffer.at(0));
-    if (!isEpochMark(buffer[0])) {
-        std::cout << "error" << std::endl;
-    }
+    assert(isEpochMark(buffer[0]));
     unsetEpochMark(buffer.at(0));
-    if (isEpochMark(buffer[0])) {
-        std::cout << "error" << std::endl;
-    }
-    if (!buffer.filled(3)) {
-        std::cout << "error" << std::endl;
-    }
+    assert(!isEpochMark(buffer[0]));
+    assert(buffer.filled(3));
 
-    if (buffer[0] != in[0]) {
-        std::cout << "error" << std::endl;
-    }
+    assert(buffer[0] == in[0]);
     buffer.movePos(1);
-    if (buffer[0] != in[1]) {
-        std::cout << "error" << std::endl;
-    }
-    if (buffer.filledFromCurrentPos(3)) {
-        std::cout << "error" << std::endl;
-    }
+    assert(buffer[0] == in[1]);
+    assert(!buffer.filledFromCurrentPos(3));
     buffer.reset();
     for (int x = 0; x < 1000; x++) {
         buffer.write(in, 3);
         buffer.read(out, 3);
         for (int i = 0; i < 3; i++) {
-            if (in[i] != out[i]) {
-                std::cout << "error" << std::endl;
-            }
+            assert(in[i] == out[i]);
         }
         std::fill_n(out, 3, 0);
-        if (buffer.filled(1)) {
-            std::cout << "error" << std::endl;
-        }
+        assert(!buffer.filled(1));
     }
     buffer.reset();
     for (int i = 0; i < 3; i++) {
         buffer[i] = ref[i];
     }
     buffer.moveWritePos(3);
-    if (!buffer.filled(3)) {
-        std::cout << "error" << std::endl;
-    }
+    assert(buffer.filled(3));
+
     buffer.read(out, 3);
     for (int i = 0; i < 3; i++) {
-        if (ref[i] != out[i]) {
-            std::cout << "error" << std::endl;
-        }
+        assert(ref[i] == out[i]);
     }
     buffer.reset();
     for (int i = 0; i < 3; i++) {
         buffer[i] = ref[i];
-        if (buffer[i] != ref[i]) {
-            std::cout << "error" << std::endl;
-        }
+        assert(buffer[i] == ref[i]);
     }
     buffer.reset();
     buffer.write(in, 3);
     buffer.write(ref, 3);
     buffer.movePos(3);
     for (int i = 0; i < 3; i++) {
-        if (buffer[i] != ref[i]) {
-            std::cout << "error" << std::endl;
-        }
+        assert(buffer[i] == ref[i]);
     }
     RingBuffer<short> buffer2 = RingBuffer<short>(10);
     buffer2[0] = 1;
@@ -85,9 +62,7 @@ int main() {
     buffer2[1] = 5;
     buffer2[2] = 6;
     for (int i = -3; i < 3; i++) {
-        if (buffer2[i] != (i + 4)) {
-            std::cout << "error" << std::endl;
-        }
+        assert(buffer2[i] == (i + 4));
     }
     RingBuffer<short> buffer3 = RingBuffer<short>(10);
     for (int x = 0; x < 100; x++) {
@@ -96,9 +71,7 @@ int main() {
         }
         buffer3.movePos(10);
         for (int i = 0; i < 10; i++) {
-            if (buffer3[i - 10] != i) {
-                std::cout << "error" << std::endl;
-            }
+            assert(buffer3[i - 10] == i);
         }
     }
 }

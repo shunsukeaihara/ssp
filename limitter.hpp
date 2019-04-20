@@ -16,6 +16,7 @@ class Limitter {
         _buffer = new T[SSP_LIMITTER_BUFFERSIZE]();
         reset();
     }
+
     virtual ~Limitter() {
         delete _buffer;
     }

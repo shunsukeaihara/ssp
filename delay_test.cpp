@@ -1,6 +1,6 @@
 
+#include <assert.h>
 #include <delay.hpp>
-#include <iostream>
 using namespace ssp;
 
 int main() {
@@ -16,14 +16,11 @@ int main() {
     }
     double expected = 1.0 + 1.0 * 0.8 + 1.0 * pow(0.8, 2) + 1.0 * pow(0.8, 3);
     double out = delay.filterOne(1.0);
-    if (fabs(expected - out) > SSP_EPSILON) {
-        std::cout << "error" << std::endl;
-    }
+    assert(fabs(expected - out) < SSP_EPSILON);
+
     expected = 1.0;
     out = delay.filterOne(1.0);
-    if (fabs(expected - out) > SSP_EPSILON) {
-        std::cout << "error" << std::endl;
-    }
+    assert(fabs(expected - out) < SSP_EPSILON);
     Delay<double> delay2 = Delay<double>(1000, 3, 0.8, 100);
     for (int i = 0; i < 300; i++) {
         // 2秒毎に書き込み -> 300サンプル前と100サンプル前に1.0書き込み
@@ -35,7 +32,5 @@ int main() {
     }
     expected = 1.0 + 1.0 * pow(0.8, 1) + 1.0 * pow(0.8, 3);
     out = delay2.filterOne(1.0);
-    if (fabs(expected - out) > SSP_EPSILON) {
-        std::cout << "error" << std::endl;
-    }
+    assert(fabs(expected - out) < SSP_EPSILON);
 }

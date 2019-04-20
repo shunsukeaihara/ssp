@@ -1,7 +1,6 @@
-#include <stdio.h>
+#include <assert.h>
 #include <biquad_filter.hpp>
 #include <butterworth_filter.hpp>
-#include <iostream>
 #include <vector>
 
 #define EPSILON 1.0e-14
@@ -24,35 +23,19 @@ void calcPolesTest() {
     base[6] = complex<double>(-0.98078528040323, 0.19509032201613);
     base[7] = complex<double>(-0.98078528040323, -0.19509032201613);
     for (int i = 0; i < 8; i++) {
-        if (poles[i].real() - base[i].real() > EPSILON) {
-            std::cout << "error" << std::endl;
-        }
-        if (poles[i].imag() - base[i].imag() > EPSILON) {
-            std::cout << "error" << std::endl;
-        }
+        assert(poles[i].real() - base[i].real() < EPSILON);
+        assert(poles[i].imag() - base[i].imag() < EPSILON);
     }
 }
 
 void checkBiquadFilterCoeffs(BiquadCascade<double> *bqc, double a0, double a1, double a2, double b0, double b1, double b2, int i) {
     BiquadFilter<double> *f = bqc->getFilter(i);
-    if (abs(a0 - f->_a0) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
-    if (abs(a1 - f->_a1) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
-    if (abs(a2 - f->_a2) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
-    if (abs(b0 - f->_b0) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
-    if (abs(b1 - f->_b1) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
-    if (abs(b2 - f->_b2) > EPSILON_COEFF) {
-        std::cout << "error" << std::endl;
-    }
+    assert(abs(a0 - f->_a0) < EPSILON_COEFF);
+    assert(abs(a1 - f->_a1) < EPSILON_COEFF);
+    assert(abs(a2 - f->_a2) < EPSILON_COEFF);
+    assert(abs(b0 - f->_b0) < EPSILON_COEFF);
+    assert(abs(b1 - f->_b1) < EPSILON_COEFF);
+    assert(abs(b2 - f->_b2) < EPSILON_COEFF);
 }
 
 void lowpassButterworthFilterTest() {
