@@ -22,6 +22,7 @@ inline void calcPoles(vector<complex<T> > *poles, int order) {
     }
 }
 
+// ここのinterfaceは考える
 template <typename T>
 inline T bilinearTransform(complex<T> *sz) {
     complex<T> two = complex<T>(2.0, 0);
@@ -46,7 +47,7 @@ inline T splane2zplane(vector<complex<T> > *zeros,
 template <typename T>
 int zplane2SecondOrderSection(const vector<complex<T> > &zeros,
                               const vector<complex<T> > &poles, const int filterNum,
-                              vector<T> &coeffs) {
+                              vector<T> *coeffs) {
     vector<complex<T> > zerosTemp(zeros);
     zerosTemp.resize(filterNum);
     vector<complex<T> > polesTemp(poles);
@@ -56,18 +57,18 @@ int zplane2SecondOrderSection(const vector<complex<T> > &zeros,
     }
     int nsos = 0;
     for (int i = 0; i < filterNum; i += 2) {
-        coeffs.push_back(-(polesTemp[i] + polesTemp[i + 1]).real());
-        coeffs.push_back((polesTemp[i] * polesTemp[i + 1]).real());
-        coeffs.push_back(-(zerosTemp[i] + zerosTemp[i + 1]).real());
-        coeffs.push_back((zerosTemp[i] * zerosTemp[i + 1]).real());
+        coeffs->push_back(-(polesTemp[i] + polesTemp[i + 1]).real());
+        coeffs->push_back((polesTemp[i] * polesTemp[i + 1]).real());
+        coeffs->push_back(-(zerosTemp[i] + zerosTemp[i + 1]).real());
+        coeffs->push_back((zerosTemp[i] * zerosTemp[i + 1]).real());
         nsos++;
     }
 
     if (filterNum % 2 == 1) {
-        coeffs.push_back(-polesTemp[filterNum - 1].real());
-        coeffs.push_back(0);
-        coeffs.push_back(-zerosTemp[filterNum - 1].real());
-        coeffs.push_back(0);
+        coeffs->push_back(-polesTemp[filterNum - 1].real());
+        coeffs->push_back(0);
+        coeffs->push_back(-zerosTemp[filterNum - 1].real());
+        coeffs->push_back(0);
         nsos++;
     }
     return nsos;
@@ -76,7 +77,7 @@ int zplane2SecondOrderSection(const vector<complex<T> > &zeros,
 template <class T>
 class ButterworthFilter {
    public:
-    ButterworthFilter(vector<T> &coeffs, const int filterNum, const T overallGain) {
+    ButterworthFilter(const vector<T> &coeffs, const int filterNum, const T overallGain) {
         _cascade = new BiquadCascade<T>(coeffs, filterNum, overallGain);
     }
     virtual ~ButterworthFilter() {
@@ -98,7 +99,7 @@ class ButterworthFilter {
         }
         gain = splane2zplane(&zeros, &poles, gain);
         T overallGain = preGain * (preGain / gain);
-        zplane2SecondOrderSection(zeros, poles, numPoles, coeffs);
+        zplane2SecondOrderSection(zeros, poles, numPoles, &coeffs);
         return new ButterworthFilter<T>(coeffs, order / 2, overallGain);
     }
 

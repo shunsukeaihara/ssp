@@ -2,7 +2,7 @@ CC :=g++
 CFLAGS := -I. -Wall
 LDFLAGS :=
 
-test: test_butterworth sample_resampler sample_esola test_ringbuffer test_delay sample_pitchshifter sample_zfr
+test: test_butterworth test_ringbuffer test_delay sample_pitchshifter sample_zfr sample_resampler sample_timestretch
 
 test_butterworth:
 	mkdir -p tests/bin/
@@ -27,10 +27,10 @@ sample_resampler:
 	mkdir -p samples/bin/
 	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/resampler_sample samples/resampler_sample.cpp
 
-sample_esola:
+sample_timestretch:
 	mkdir -p samples/bin/
-	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/esola_sample samples/esola_sample.cpp
-	# sox sample.wav -t raw - | samples/bin/esola_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
+	$(CC) $(CFLAGS) -O3 $(LDFLAGS) -o samples/bin/timestretch_sample samples/timestretch_sample.cpp
+	# sox sample.wav -t raw - | samples/bin/timestretch_sample |play -r 16000 -b 16 -c 1 -e signed -t raw -
 
 sample_pitchshifter:
 	mkdir -p samples/bin/
