@@ -7,7 +7,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class ZFREpochDetector {
    public:
     ZFREpochDetector(const T winMs, const int insize, const T a1, const T a2, const T fs) : _avgWindow(fs * winMs / 1000.0), _insize(insize), _a1(a1), _a2(a2), _fs(fs), _s(RingBuffer<T>(insize + _avgWindow * 2)), _y2(RingBuffer<T>(insize + _avgWindow * 2)) {

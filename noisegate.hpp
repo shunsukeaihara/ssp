@@ -7,7 +7,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class NoiseGate {
    public:
     NoiseGate(T attackMs, T releaseMs, T threshDb, T fs) : _env(EnvelopeGenerator<T>(attackMs, releaseMs, fs)) {

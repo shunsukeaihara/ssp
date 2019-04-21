@@ -6,7 +6,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class Resampler {
    public:
     Resampler(const int fromFs, const int toFs, const int capacity) : _fromFs(fromFs), _toFs(toFs) {

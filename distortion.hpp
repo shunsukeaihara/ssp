@@ -5,7 +5,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class Distortion {
    public:
     Distortion(const T amount) {

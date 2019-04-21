@@ -5,7 +5,7 @@
 #include <envelope.hpp>
 
 namespace ssp {
-template <class T>
+template <typename T>
 class Compressor {
    public:
     Compressor(const T attackMs, const T releaseMs, const T threshDb, const T ratio, const T fs) : _env(EnvelopeGenerator<T>(attackMs, releaseMs, fs)) {

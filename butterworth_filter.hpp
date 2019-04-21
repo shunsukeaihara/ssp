@@ -74,7 +74,7 @@ int zplane2SecondOrderSection(const vector<complex<T> > &zeros,
     return nsos;
 }
 
-template <class T>
+template <typename T>
 class ButterworthFilter {
    public:
     ButterworthFilter(const vector<T> &coeffs, const int filterNum, const T overallGain) {

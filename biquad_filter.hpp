@@ -23,7 +23,7 @@ inline T calcA(T dbGain) {
     return pow(10, dbGain / 40);
 }
 
-template <class T>
+template <typename T>
 class BiquadFilter {
    public:
     const T _a0;
@@ -177,7 +177,7 @@ class BiquadFilter {
     T _out2;
 };
 
-template <class T>
+template <typename T>
 class BiquadCascade {
    public:
     BiquadCascade(const vector<T> &coeffs, const int filterNum, const T overallGain) : _overallGain(overallGain) {

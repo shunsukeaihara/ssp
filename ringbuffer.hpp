@@ -5,7 +5,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class RingBuffer {
    public:
     RingBuffer(const int capasity) : _capasity(capasity) {

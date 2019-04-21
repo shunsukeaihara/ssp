@@ -16,7 +16,7 @@ int findFirstEpoch(const RingBuffer<T> &in, const int offset, const int maxIndex
     return -1;
 }
 
-template <class T>
+template <typename T>
 class ESOLA {
    public:
     ESOLA(T tsr, T winMs, int inputsize, T fs) : _frameSize(fs * winMs / 1000.0), _fs(fs), _analysisBuffer(inputsize * 2.5), _synthesisBuffer(RingBuffer<T>(inputsize * tsr * 2.5)) {

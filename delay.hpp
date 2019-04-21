@@ -7,7 +7,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class Delay {
    public:
     Delay(const T delayMs, const int delayCount, const T decay, const T fs) : _buffer(int((delayMs / 1000.0 * fs) * delayCount + 1)) {

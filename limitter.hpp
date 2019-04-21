@@ -7,7 +7,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class Limitter {
    public:
     Limitter(const T attackMs, const T releaseMs, const T threshDb, const T fs) : _peakHold(fs * attackMs / 1000.0), _buffer(RingBuffer<T>(_peakHold + 1)), _env(EnvelopeGenerator<T>(attackMs / 5.0, releaseMs / 5.0, fs)) {

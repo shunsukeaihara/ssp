@@ -22,7 +22,7 @@ inline T singlePoleLPF(const T x, const T y_1, const T factor) {
     return x + factor * (y_1 - x);  // (1.0 - factor) * x + factor * y_1
 }
 
-template <class T>
+template <typename T>
 class EnvelopeGenerator {
    public:
     EnvelopeGenerator() {

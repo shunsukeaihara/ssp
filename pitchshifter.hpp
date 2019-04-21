@@ -9,7 +9,7 @@
 
 namespace ssp {
 
-template <class T>
+template <typename T>
 class PitchShifter {
    public:
     PitchShifter(const T shiftrate, const T zfrWinMs, const T esolaWinMs, const int insize, const int internalBufferSize, const T fs) : _internalBufferSize(internalBufferSize) {
