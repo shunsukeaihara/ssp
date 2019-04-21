@@ -90,16 +90,36 @@ class ButterworthFilter {
         vector<complex<T> > poles;
         vector<T> coeffs;
         calcPoles(&poles, order);
-        size_t numPoles = poles.size();
         T gain = 1.0;
-        gain *= pow(wrapedCutoff, numPoles);
+        gain *= pow(wrapedCutoff, poles.size());
         T preGain = gain;
-        for (int i = 0; i < numPoles; i++) {
+        for (int i = 0; i < poles.size(); i++) {
             poles[i] *= complex<T>(wrapedCutoff, 0);
         }
         gain = splane2zplane(&zeros, &poles, gain);
         T overallGain = preGain * (preGain / gain);
-        zplane2SecondOrderSection(zeros, poles, numPoles, &coeffs);
+        zplane2SecondOrderSection(zeros, poles, poles.size(), &coeffs);
+        return new ButterworthFilter<T>(coeffs, order / 2, overallGain);
+    }
+
+    static ButterworthFilter<T> *createHighPassFilter(T fs, T cutoff, int order) {
+        T wrapedCutoff = (2.0 * tan(M_PI * cutoff / fs));
+        vector<complex<T> > zeros;
+        vector<complex<T> > poles;
+        vector<T> coeffs;
+        calcPoles(&poles, order);
+        T gain = 1.0;
+        complex<T> prodp = complex<T>(1.0, 0.0);
+        for (int i = 0; i < poles.size(); i++) {
+            prodp *= -poles[i];
+            if (abs(poles[i]) != 0.0) {
+                poles[i] = complex<T>(wrapedCutoff, 0.0) / poles[i];
+            }
+        }
+        gain *= 1.0 / prodp.real();
+        gain = splane2zplane(&zeros, &poles, gain);
+        T overallGain = 1.0 / gain;
+        zplane2SecondOrderSection(zeros, poles, poles.size(), &coeffs);
         return new ButterworthFilter<T>(coeffs, order / 2, overallGain);
     }
 
