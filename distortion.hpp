@@ -14,7 +14,7 @@ class Distortion {
     virtual ~Distortion() {}
 
     inline T filterOne(const T in) const {
-        return waveShaper(in, _amount);
+        return waveShaper(in);
     }
 
     inline void filter(T *in, const int len) const {
